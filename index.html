@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards | PILONCILLOS</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+
+    <div class="bg-scene">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="ghost-cards">
+            <div class="ghost-card gc-1"></div>
+            <div class="ghost-card gc-2"></div>
+            <div class="ghost-card gc-3"></div>
+            <div class="ghost-card gc-4"></div>
+            <div class="ghost-card gc-5"></div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <div class="glass-panel">
+            <main class="content-area">
+
+                <section id="view-input" class="view active">
+                    <header>
+                        <h1>Flashcards</h1>
+                        <p>Formato: <strong>Pregunta : Respuesta</strong></p>
+                    </header>
+
+                    <div class="instructions-accordion">
+                        <button class="accordion-btn" id="instructions-toggle" tabindex="0">
+                            <span><i class="ph ph-info"></i> Modos de uso y Teclado</span>
+                            <i class="ph ph-caret-down caret"></i>
+                        </button>
+                        <div class="accordion-content" id="instructions-content">
+                            <div class="instructions-grid">
+                                <div class="instruction-block">
+                                    <h4><i class="ph ph-magic-wand"></i> Flujo Rápido (IA)</h4>
+                                    <ol>
+                                        <li>Copia el prompt con el botón.</li>
+                                        <li>Abre tu IA con los enlaces rápidos.</li>
+                                        <li>Vuelve rápido con <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> (O <kbd>Cmd</kbd> en Mac).</li>
+                                        <li>Pega el texto directamente.</li>
+                                    </ol>
+                                </div>
+                                <div class="instruction-block">
+                                    <h4><i class="ph ph-keyboard"></i> Atajos de Teclado</h4>
+                                    <ul>
+                                        <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : Generar tarjetas.</li>
+                                        <li><kbd>Tab</kbd> : Navegar entre tarjetas y botones.</li>
+                                        <li><kbd>Enter</kbd> o <kbd>Esp</kbd> : Voltear tarjeta.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ai-box">
+                        <div class="ai-box-title">
+                            <i class="ph ph-robot"></i>
+                            <span>Genera rápido con IA</span>
+                        </div>
+                        <p class="ai-hint">Copia el prompt → pégalo en ChatGPT, Gemini o Claude → pega el resultado abajo.</p>
+                        <div class="prompt-row">
+                            <code id="ai-prompt-text">Genera 10 flashcards sobre [TU TEMA O LO QUE DESEAS ESTUDIAR] para estudiar. Devuelve únicamente el texto usando estrictamente este formato por línea: Pregunta : Respuesta. No incluyas números, viñetas, ni texto adicional.</code>
+                            <button id="copy-prompt-btn" class="copy-btn" title="Copiar prompt" tabindex="0">
+                                <i class="ph ph-copy"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="ai-links">
+                            <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
+                                <i class="ph ph-chat-circle-dots"></i> ChatGPT
+                            </a>
+                            <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
+                                <i class="ph ph-sparkle"></i> Gemini
+                            </a>
+                            <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
+                                <i class="ph ph-brain"></i> Claude
+                            </a>
+                        </div>
+                    </div>
+
+                    <textarea id="text-input" placeholder="Pega el resultado de tu IA aquí, o escribe tus tarjetas a mano…&#10;&#10;Ejemplo:&#10;Capital de Francia : París&#10;Fórmula del agua : H₂O"></textarea>
+
+                    <button id="generate-btn" class="btn-primary">
+                        <i class="ph ph-magic-wand"></i>
+                        Generar Tarjetas
+                    </button>
+                </section>
+
+                <section id="view-study" class="view hidden">
+                    <div class="study-bar">
+                        <div class="bar-left">
+                            <button id="back-btn" class="btn-secondary">
+                                <i class="ph ph-arrow-left"></i> Volver
+                            </button>
+                            <span id="card-counter" class="badge">0 Tarjetas</span>
+                        </div>
+                        <button id="start-practice-btn" class="btn-accent">
+                            <i class="ph ph-play-circle"></i> Practicar Quiz
+                        </button>
+                    </div>
+                    <div id="flashcards-container" class="cards-grid"></div>
+                </section>
+
+                <section id="view-practice" class="view hidden">
+                    <div class="quiz-card">
+                        <div class="quiz-header">
+                            <button id="exit-practice-btn" class="btn-secondary small">
+                                <i class="ph ph-x"></i> Salir
+                            </button>
+                            <span id="practice-progress" class="badge">1 / 5</span>
+                        </div>
+                        <h2 id="practice-question">¿Cargando pregunta?</h2>
+                        <div id="mc-options" class="mc-grid"></div>
+                        <p id="feedback-message" class="feedback"></p>
+                        <div class="quiz-actions">
+                            <button id="skip-btn" class="btn-skip">
+                                <i class="ph ph-skip-forward"></i> Saltar
+                            </button>
+                            <button id="next-btn" class="btn-next hidden">
+                                Siguiente <i class="ph ph-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="view-results" class="view hidden">
+                    <div class="results-layout">
+                        <div class="results-left">
+                            <h2>Resultados</h2>
+                            <div class="score-ring">
+                                <svg viewBox="0 0 100 100">
+                                    <defs>
+                                        <linearGradient id="ringGradient" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#38bdf8"/>
+                                            <stop offset="100%" stop-color="#818cf8"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <circle class="ring-track" cx="50" cy="50" r="40"/>
+                                    <circle class="ring-fill" id="score-ring-fill" cx="50" cy="50" r="40"/>
+                                </svg>
+                                <div class="score-label">
+                                    <span id="score-percentage">0%</span>
+                                    <p>Aciertos</p>
+                                </div>
+                            </div>
+                            <div class="stat-row">
+                                <div class="stat-chip correct-chip"><span id="stat-correct">0</span><p>Correctas</p></div>
+                                <div class="stat-chip wrong-chip"><span id="stat-wrong">0</span><p>Incorrectas</p></div>
+                                <div class="stat-chip skip-chip"><span id="stat-skipped">0</span><p>Saltadas</p></div>
+                            </div>
+                            <button id="retry-btn" class="btn-primary full">
+                                <i class="ph ph-arrows-counter-clockwise"></i> Volver a Estudiar
+                            </button>
+                        </div>
+                        <div class="results-right">
+                            <h3>Desglose</h3>
+                            <div id="history-list" class="history-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
