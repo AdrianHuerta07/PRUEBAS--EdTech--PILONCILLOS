@@ -3,181 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcards | PILONCILLOS</title>
+    <title>Flashcards | Piloncillos</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
 
-    <div class="bg-scene">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="ghost-cards">
-            <div class="ghost-card gc-1"></div>
-            <div class="ghost-card gc-2"></div>
-            <div class="ghost-card gc-3"></div>
-            <div class="ghost-card gc-4"></div>
-            <div class="ghost-card gc-5"></div>
+    <!-- Región viva para anuncios de accesibilidad (invisible, para lectores de pantalla) -->
+    <div id="aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ══════════════════════════════════════════════════════
+         HEADER INSTITUCIONAL
+         ══════════════════════════════════════════════════════ -->
+    <header class="site-header">
+        <div class="site-header-inner">
+            <div class="brand">
+                <div class="brand-mark" aria-hidden="true">
+                    <i class="ph-fill ph-cards"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Flashcards</span>
+                    <span class="brand-sub">Equipo Piloncillos</span>
+                </div>
+            </div>
+            <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="voice-settings-panel" title="Ajustes de voz y accesibilidad">
+                <i class="ph ph-list"></i>
+            </button>
         </div>
+        <div class="header-rule"></div>
+    </header>
+
+    <!-- ══════════════════════════════════════════════════════
+         PANEL DE ACCESIBILIDAD (desplegado desde el menú)
+         ══════════════════════════════════════════════════════ -->
+    <div id="voice-settings-panel" class="voice-settings-panel hidden">
+        <div class="voice-panel-head">
+            <i class="ph-fill ph-ear"></i>
+            <h3>Accesibilidad por voz</h3>
+        </div>
+
+        <button id="voice-master-toggle" class="voice-master-btn" type="button" aria-pressed="false">
+            <i class="ph ph-speaker-high"></i>
+            <span class="voice-btn-label">Activar lectura en voz alta</span>
+        </button>
+        <button id="voice-stop-btn" class="voice-stop-btn hidden" type="button">
+            <i class="ph ph-stop"></i> Detener lectura
+        </button>
+
+        <div class="voice-settings-row">
+            <label for="voice-rate">Velocidad de lectura</label>
+            <input type="range" id="voice-rate" min="0.6" max="1.6" step="0.1" value="0.95">
+            <span id="voice-rate-val">0.95×</span>
+        </div>
+        <div class="voice-settings-row">
+            <label for="voice-select">Voz</label>
+            <select id="voice-select"></select>
+        </div>
+        <p class="voice-settings-hint"><i class="ph ph-info"></i> Toca cualquier tarjeta o pregunta con el icono <i class="ph ph-speaker-high"></i> para escucharla.</p>
     </div>
 
-    <div class="wrapper">
-        <div class="glass-panel">
-            <main class="content-area">
+    <!-- ══════════════════════════════════════════════════════
+         BURBUJAS FLOTANTES DE ACCIÓN RÁPIDA
+         ══════════════════════════════════════════════════════ -->
+    <div class="quick-bubbles quick-bubbles-left" aria-hidden="true">
+        <div class="bubble bubble-decor"><i class="ph-fill ph-graduation-cap"></i></div>
+        <div class="bubble bubble-decor"><i class="ph-fill ph-lightbulb"></i></div>
+        <div class="bubble bubble-decor"><i class="ph-fill ph-book-open"></i></div>
+    </div>
 
-                <section id="view-input" class="view active">
-                    <header>
-                        <h1>Flashcards</h1>
-                        <p>Formato: <strong>Pregunta : Respuesta</strong></p>
-                    </header>
+    <main class="page">
 
-                    <div class="instructions-accordion">
-                        <button class="accordion-btn" id="instructions-toggle" tabindex="0">
-                            <span><i class="ph ph-info"></i> Modos de uso y Teclado</span>
-                            <i class="ph ph-caret-down caret"></i>
-                        </button>
-                        <div class="accordion-content" id="instructions-content">
-                            <div class="instructions-grid">
-                                <div class="instruction-block">
-                                    <h4><i class="ph ph-magic-wand"></i> Flujo Rápido (IA)</h4>
-                                    <ol>
-                                        <li>Copia el prompt con el botón.</li>
-                                        <li>Abre tu IA con los enlaces rápidos.</li>
-                                        <li>Vuelve rápido con <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> (O <kbd>Cmd</kbd> en Mac).</li>
-                                        <li>Pega el texto directamente.</li>
-                                    </ol>
-                                </div>
-                                <div class="instruction-block">
-                                    <h4><i class="ph ph-keyboard"></i> Atajos de Teclado</h4>
-                                    <ul>
-                                        <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : Generar tarjetas.</li>
-                                        <li><kbd>Tab</kbd> : Navegar entre tarjetas y botones.</li>
-                                        <li><kbd>Enter</kbd> o <kbd>Esp</kbd> : Voltear tarjeta.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ai-box">
-                        <div class="ai-box-title">
-                            <i class="ph ph-robot"></i>
-                            <span>Genera rápido con IA</span>
-                        </div>
-                        <p class="ai-hint">Copia el prompt → pégalo en ChatGPT, Gemini o Claude → pega el resultado abajo.</p>
-                        <div class="prompt-row">
-                            <code id="ai-prompt-text">Genera 10 flashcards sobre [TU TEMA O LO QUE DESEAS ESTUDIAR] para estudiar. Devuelve únicamente el texto usando estrictamente este formato por línea: Pregunta : Respuesta. No incluyas números, viñetas, ni texto adicional.</code>
-                            <button id="copy-prompt-btn" class="copy-btn" title="Copiar prompt" tabindex="0">
-                                <i class="ph ph-copy"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="ai-links">
-                            <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2057 5.9847 5.9847 0 0 0 3.998-2.9001 6.0557 6.0557 0 0 0-.7478-7.0731zM13.0604 22.0147c-2.02 0-3.8058-1.1278-4.7061-2.8252l4.0886-2.3591v-4.7118l4.0818 2.3564v4.7182c0 1.5583-1.5724 2.8215-3.4643 2.8215zm-9.3516-7.8546a3.916 3.916 0 0 1 .5216-3.8641l4.0886 2.36v4.716l-4.0833 2.3577-2.0416-1.1788a3.9216 3.9216 0 0 1 1.5147-4.3908zm11.233-5.5901-4.0819-2.3565 2.0417-1.1789a3.916 3.916 0 0 1 3.8687.5255 3.9174 3.9174 0 0 1 1.5146 4.389l-2.0417-1.179v-2.3565h-1.3014zm-5.4674-4.8398c2.0199 0 3.8058 1.1279 4.7061 2.8252l-4.0886 2.3592v4.7117L6.01 11.309V6.5909c0-1.5583 1.5724-2.8216 3.4643-2.8216zm-5.3218 6.4746 4.0819 2.3564-2.0417 1.179a3.916 3.916 0 0 1-3.8687-.5256 3.9174 3.9174 0 0 1-1.5146-4.389l2.0417 1.1789v2.3565h1.3014zm13.167 2.94-4.0886-2.36v-4.7161l4.0833-2.3577 2.0416 1.1789a3.9216 3.9216 0 0 1-1.5147 4.3908l-.5216.5218v3.3423zM12 14.5369a2.31 2.31 0 0 1-2.308-2.308A2.31 2.31 0 0 1 12 9.921a2.31 2.31 0 0 1 2.308 2.308A2.31 2.31 0 0 1 12 14.5369z"/>
-                                </svg>
-                                ChatGPT
-                            </a>
-                            <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 0.384c1.173 5.438 5.395 9.66 10.833 10.833-5.438 1.173-9.66 5.395-10.833 10.833-1.173-5.438-5.395-9.66-10.833-10.833C6.605 10.044 10.827 5.822 12 0.384z"/>
-                                </svg>
-                                Gemini
-                            </a>
-                            <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17.153 14.869h1.764L13.791 5.342h-1.921l-5.127 9.527h1.74l1.242-2.385h5.187l1.241 2.385zM10.15 11.233l1.83-3.513c.27-.514.471-.976.603-1.385h.02c.123.409.314.87.575 1.385l1.848 3.513H10.15zM22.564 18.658H1.436V5.342H0v14.713h24V5.342h-1.436v13.316z"/>
-                                </svg>
-                                Claude
-                            </a>
-                        </div>
-                    </div>
+        <section id="view-input" class="view active">
+            <div class="hero-band">
+                <h1>FLASHCARDS <span>QUE SÍ SE ESCUCHAN</span></h1>
+                <p>Conocimiento que se estudia, se escucha y se dice en voz alta.</p>
+            </div>
 
-                    <textarea id="text-input" placeholder="Pega el resultado de tu IA aquí, o escribe tus tarjetas a mano…&#10;&#10;Ejemplo:&#10;Capital de Francia : París&#10;Fórmula del agua : H₂O"></textarea>
+            <div class="content-card">
 
-                    <button id="generate-btn" class="btn-primary">
-                        <i class="ph ph-magic-wand"></i>
-                        Generar Tarjetas
+                <div class="format-pill">
+                    <i class="ph-fill ph-info"></i>
+                    Formato por línea: <strong>Pregunta&nbsp;:&nbsp;Respuesta</strong>
+                </div>
+
+                <div class="instructions-accordion">
+                    <button class="accordion-btn" id="instructions-toggle" tabindex="0">
+                        <span><i class="ph ph-question"></i> Modos de uso y teclado</span>
+                        <i class="ph ph-caret-down caret"></i>
                     </button>
-                </section>
-
-                <section id="view-study" class="view hidden">
-                    <div class="study-bar">
-                        <div class="bar-left">
-                            <button id="back-btn" class="btn-secondary">
-                                <i class="ph ph-arrow-left"></i> Volver
-                            </button>
-                            <span id="card-counter" class="badge">0 Tarjetas</span>
+                    <div class="accordion-content" id="instructions-content">
+                        <div class="instructions-grid">
+                            <div class="instruction-block">
+                                <h4><i class="ph ph-magic-wand"></i> Flujo rápido con IA</h4>
+                                <ol>
+                                    <li>Copia el prompt con el botón.</li>
+                                    <li>Abre tu IA con los enlaces rápidos.</li>
+                                    <li>Vuelve rápido con <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> (o <kbd>Cmd</kbd> en Mac).</li>
+                                    <li>Pega el texto directamente.</li>
+                                </ol>
+                            </div>
+                            <div class="instruction-block">
+                                <h4><i class="ph ph-keyboard"></i> Atajos de teclado</h4>
+                                <ul>
+                                    <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : Generar tarjetas.</li>
+                                    <li><kbd>Tab</kbd> : Navegar entre tarjetas y botones.</li>
+                                    <li><kbd>Enter</kbd> o <kbd>Esp</kbd> : Voltear tarjeta.</li>
+                                </ul>
+                            </div>
                         </div>
-                        <button id="start-practice-btn" class="btn-accent">
-                            <i class="ph ph-play-circle"></i> Practicar Quiz
+                    </div>
+                </div>
+
+                <div class="ai-box">
+                    <div class="ai-box-title">
+                        <i class="ph-fill ph-robot"></i>
+                        <span>Genera rápido con IA</span>
+                    </div>
+                    <p class="ai-hint">Copia el prompt → pégalo en ChatGPT, Gemini o Claude → pega el resultado abajo.</p>
+                    <div class="prompt-row">
+                        <code id="ai-prompt-text">Genera 10 flashcards sobre [TU TEMA O LO QUE DESEAS ESTUDIAR] para estudiar. Devuelve únicamente el texto usando estrictamente este formato por línea: Pregunta : Respuesta. No incluyas números, viñetas, ni texto adicional.</code>
+                        <button id="copy-prompt-btn" class="copy-btn" title="Copiar prompt" tabindex="0">
+                            <i class="ph ph-copy"></i>
                         </button>
                     </div>
-                    <div id="flashcards-container" class="cards-grid"></div>
-                </section>
 
-                <section id="view-practice" class="view hidden">
-                    <div class="quiz-card">
-                        <div class="quiz-header">
-                            <button id="exit-practice-btn" class="btn-secondary small">
-                                <i class="ph ph-x"></i> Salir
-                            </button>
-                            <span id="practice-progress" class="badge">1 / 5</span>
-                        </div>
-                        <h2 id="practice-question">¿Cargando pregunta?</h2>
-                        <div id="mc-options" class="mc-grid"></div>
-                        <p id="feedback-message" class="feedback"></p>
-                        <div class="quiz-actions">
-                            <button id="skip-btn" class="btn-skip">
-                                <i class="ph ph-skip-forward"></i> Saltar
-                            </button>
-                            <button id="next-btn" class="btn-next hidden">
-                                Siguiente <i class="ph ph-arrow-right"></i>
-                            </button>
-                        </div>
+                    <div class="ai-links">
+                        <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2057 5.9847 5.9847 0 0 0 3.998-2.9001 6.0557 6.0557 0 0 0-.7478-7.0731zM13.0604 22.0147c-2.02 0-3.8058-1.1278-4.7061-2.8252l4.0886-2.3591v-4.7118l4.0818 2.3564v4.7182c0 1.5583-1.5724 2.8215-3.4643 2.8215zm-9.3516-7.8546a3.916 3.916 0 0 1 .5216-3.8641l4.0886 2.36v4.716l-4.0833 2.3577-2.0416-1.1788a3.9216 3.9216 0 0 1 1.5147-4.3908zm11.233-5.5901-4.0819-2.3565 2.0417-1.1789a3.916 3.916 0 0 1 3.8687.5255 3.9174 3.9174 0 0 1 1.5146 4.389l-2.0417-1.179v-2.3565h-1.3014zm-5.4674-4.8398c2.0199 0 3.8058 1.1279 4.7061 2.8252l-4.0886 2.3592v4.7117L6.01 11.309V6.5909c0-1.5583 1.5724-2.8216 3.4643-2.8216zm-5.3218 6.4746 4.0819 2.3564-2.0417 1.179a3.916 3.916 0 0 1-3.8687-.5256 3.9174 3.9174 0 0 1-1.5146-4.389l2.0417 1.1789v2.3565h1.3014zm13.167 2.94-4.0886-2.36v-4.7161l4.0833-2.3577 2.0416 1.1789a3.9216 3.9216 0 0 1-1.5147 4.3908l-.5216.5218v3.3423zM12 14.5369a2.31 2.31 0 0 1-2.308-2.308A2.31 2.31 0 0 1 12 9.921a2.31 2.31 0 0 1 2.308 2.308A2.31 2.31 0 0 1 12 14.5369z"/>
+                            </svg>
+                            ChatGPT
+                        </a>
+                        <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 0.384c1.173 5.438 5.395 9.66 10.833 10.833-5.438 1.173-9.66 5.395-10.833 10.833-1.173-5.438-5.395-9.66-10.833-10.833C6.605 10.044 10.827 5.822 12 0.384z"/>
+                            </svg>
+                            Gemini
+                        </a>
+                        <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.153 14.869h1.764L13.791 5.342h-1.921l-5.127 9.527h1.74l1.242-2.385h5.187l1.241 2.385zM10.15 11.233l1.83-3.513c.27-.514.471-.976.603-1.385h.02c.123.409.314.87.575 1.385l1.848 3.513H10.15zM22.564 18.658H1.436V5.342H0v14.713h24V5.342h-1.436v13.316z"/>
+                            </svg>
+                            Claude
+                        </a>
                     </div>
-                </section>
+                </div>
 
-                <section id="view-results" class="view hidden">
-                    <div class="results-layout">
-                        <div class="results-left">
+                <div class="textarea-wrap">
+                    <textarea id="text-input" placeholder="Pega el resultado de tu IA aquí, o escribe tus tarjetas a mano…&#10;&#10;Ejemplo:&#10;Capital de Francia : París&#10;Fórmula del agua : H₂O"></textarea>
+                    <button id="dictate-btn" class="dictate-btn" type="button" title="Dictar por voz (habla y se escribirá el texto)">
+                        <i class="ph ph-microphone"></i>
+                    </button>
+                </div>
+                <p id="dictate-status" class="dictate-status hidden" role="status"></p>
+
+                <button id="generate-btn" class="btn-primary">
+                    <i class="ph-fill ph-magic-wand"></i>
+                    Generar tarjetas
+                </button>
+
+                <p class="voice-tip">
+                    <i class="ph-fill ph-hand-pointing"></i>
+                    ¿Te cuesta leer? Pulsa <i class="ph ph-microphone"></i> para dictar tus tarjetas hablando, o activa <strong>"Leer en voz alta"</strong> en el menú para que la página te lea todo.
+                </p>
+            </div>
+        </section>
+
+        <section id="view-study" class="view hidden">
+            <div class="content-card">
+                <div class="study-bar">
+                    <div class="bar-left">
+                        <button id="back-btn" class="btn-secondary">
+                            <i class="ph ph-arrow-left"></i> Volver
+                        </button>
+                        <span id="card-counter" class="badge">0 Tarjetas</span>
+                    </div>
+                    <button id="start-practice-btn" class="btn-accent">
+                        <i class="ph-fill ph-play-circle"></i> Practicar quiz
+                    </button>
+                </div>
+                <p class="voice-tip small">
+                    <i class="ph-fill ph-speaker-high"></i> Toca el altavoz de cada tarjeta para escuchar la pregunta y la respuesta.
+                </p>
+                <div id="flashcards-container" class="cards-grid"></div>
+            </div>
+        </section>
+
+        <section id="view-practice" class="view hidden">
+            <div class="quiz-card">
+                <div class="quiz-header">
+                    <button id="exit-practice-btn" class="btn-secondary small">
+                        <i class="ph ph-x"></i> Salir
+                    </button>
+                    <span id="practice-progress" class="badge">1 / 5</span>
+                </div>
+                <div class="question-row">
+                    <h2 id="practice-question">¿Cargando pregunta?</h2>
+                    <button id="listen-question-btn" class="listen-btn" type="button" title="Escuchar la pregunta">
+                        <i class="ph ph-speaker-high"></i>
+                    </button>
+                </div>
+                <div id="mc-options" class="mc-grid"></div>
+                <p id="feedback-message" class="feedback"></p>
+                <div class="quiz-actions">
+                    <button id="skip-btn" class="btn-skip">
+                        <i class="ph ph-skip-forward"></i> Saltar
+                    </button>
+                    <button id="next-btn" class="btn-next hidden">
+                        Siguiente <i class="ph ph-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-results" class="view hidden">
+            <div class="content-card">
+                <div class="results-layout">
+                    <div class="results-left">
+                        <div class="results-title-row">
                             <h2>Resultados</h2>
-                            <div class="score-ring">
-                                <svg viewBox="0 0 100 100">
-                                    <defs>
-                                        <linearGradient id="ringGradient" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
-                                            <stop offset="0%" stop-color="#e8934a"/>
-                                            <stop offset="100%" stop-color="#d4a574"/>
-                                        </linearGradient>
-                                    </defs>
-                                    <circle class="ring-track" cx="50" cy="50" r="40"/>
-                                    <circle class="ring-fill" id="score-ring-fill" cx="50" cy="50" r="40"/>
-                                </svg>
-                                <div class="score-label">
-                                    <span id="score-percentage">0%</span>
-                                    <p>Aciertos</p>
-                                </div>
-                            </div>
-                            <div class="stat-row">
-                                <div class="stat-chip correct-chip"><span id="stat-correct">0</span><p>Correctas</p></div>
-                                <div class="stat-chip wrong-chip"><span id="stat-wrong">0</span><p>Incorrectas</p></div>
-                                <div class="stat-chip skip-chip"><span id="stat-skipped">0</span><p>Saltadas</p></div>
-                            </div>
-                            <button id="retry-btn" class="btn-primary full">
-                                <i class="ph ph-arrows-counter-clockwise"></i> Volver a Estudiar
+                            <button id="listen-results-btn" class="listen-btn" type="button" title="Escuchar resultados">
+                                <i class="ph ph-speaker-high"></i>
                             </button>
                         </div>
-                        <div class="results-right">
-                            <h3>Desglose</h3>
-                            <div id="history-list" class="history-list"></div>
+                        <div class="score-ring">
+                            <svg viewBox="0 0 100 100">
+                                <defs>
+                                    <linearGradient id="ringGradient" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#0f6b4c"/>
+                                        <stop offset="100%" stop-color="#37b07f"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle class="ring-track" cx="50" cy="50" r="40"/>
+                                <circle class="ring-fill" id="score-ring-fill" cx="50" cy="50" r="40"/>
+                            </svg>
+                            <div class="score-label">
+                                <span id="score-percentage">0%</span>
+                                <p>Aciertos</p>
+                            </div>
                         </div>
+                        <div class="stat-row">
+                            <div class="stat-chip correct-chip"><span id="stat-correct">0</span><p>Correctas</p></div>
+                            <div class="stat-chip wrong-chip"><span id="stat-wrong">0</span><p>Incorrectas</p></div>
+                            <div class="stat-chip skip-chip"><span id="stat-skipped">0</span><p>Saltadas</p></div>
+                        </div>
+                        <button id="retry-btn" class="btn-primary full">
+                            <i class="ph ph-arrows-counter-clockwise"></i> Volver a estudiar
+                        </button>
                     </div>
-                </section>
+                    <div class="results-right">
+                        <h3>Desglose</h3>
+                        <div id="history-list" class="history-list"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-            </main>
-        </div>
-    </div>
+    </main>
+
+    <footer class="site-footer">
+        <p>Universidad Tecnológica de la Costa · Equipo Piloncillos · Proyecto académico</p>
+    </footer>
 
     <script src="app.js"></script>
 </body>
