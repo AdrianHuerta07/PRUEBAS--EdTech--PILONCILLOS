@@ -9,11 +9,62 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- PWA: instalable y offline -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0b3d2e">
 </head>
 <body>
 
     <!-- Región viva para anuncios de accesibilidad (invisible, para lectores de pantalla) -->
     <div id="aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ══════════════════════════════════════════════════════
+         PANTALLA DE LOGIN
+         ══════════════════════════════════════════════════════ -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-card">
+            <div class="login-brand">
+                <div class="brand-mark" aria-hidden="true">
+                    <i class="ph-fill ph-cards"></i>
+                </div>
+                <h1>Flashcards</h1>
+                <p>Equipo Piloncillos</p>
+            </div>
+
+            <form id="login-form" class="login-form" autocomplete="off">
+                <label for="login-email">Correo institucional</label>
+                <div class="login-input-wrap">
+                    <i class="ph ph-envelope-simple"></i>
+                    <input type="email" id="login-email" placeholder="correo@ejemplo.com" required autocomplete="username">
+                </div>
+
+                <label for="login-password">Contraseña</label>
+                <div class="login-input-wrap">
+                    <i class="ph ph-lock-key"></i>
+                    <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+                    <button type="button" id="toggle-password" class="toggle-password-btn" tabindex="-1" title="Mostrar/ocultar contraseña">
+                        <i class="ph ph-eye"></i>
+                    </button>
+                </div>
+
+                <p id="login-error" class="login-error hidden" role="alert">
+                    <i class="ph-fill ph-warning-circle"></i>
+                    <span>Correo o contraseña incorrectos.</span>
+                </p>
+
+                <button type="submit" class="btn-primary full login-submit-btn">
+                    <i class="ph-fill ph-sign-in"></i>
+                    Iniciar sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════
+         CONTENIDO DE LA APP (oculto hasta iniciar sesión)
+         ══════════════════════════════════════════════════════ -->
+    <div id="app-content" class="hidden">
 
     <!-- ══════════════════════════════════════════════════════
          HEADER INSTITUCIONAL
@@ -29,9 +80,14 @@
                     <span class="brand-sub">Equipo Piloncillos</span>
                 </div>
             </div>
-            <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="voice-settings-panel" title="Ajustes de voz y accesibilidad">
-                <i class="ph ph-list"></i>
-            </button>
+            <div class="header-actions">
+                <button id="logout-btn" class="logout-btn" type="button" title="Cerrar sesión">
+                    <i class="ph ph-sign-out"></i>
+                </button>
+                <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="voice-settings-panel" title="Ajustes de voz y accesibilidad">
+                    <i class="ph ph-list"></i>
+                </button>
+            </div>
         </div>
         <div class="header-rule"></div>
     </header>
@@ -268,6 +324,18 @@
         <p>Universidad Tecnológica de la Costa · Equipo Piloncillos · Proyecto académico</p>
     </footer>
 
+    </div> <!-- /#app-content -->
+
     <script src="app.js"></script>
+    <script>
+        // Registro del Service Worker para funcionamiento offline
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => {
+                    console.warn('No se pudo registrar el Service Worker:', err);
+                });
+            });
+        }
+    </script>
 </body>
 </html>

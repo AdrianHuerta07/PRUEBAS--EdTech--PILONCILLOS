@@ -1,6 +1,83 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ══════════════════════════════════════════════════════════
+    // MÓDULO DE LOGIN
+    // Credenciales fijas de acceso. Se valida localmente y se
+    // recuerda la sesión en localStorage para no pedir login
+    // en cada visita (útil en modo offline / app instalada).
+    // ══════════════════════════════════════════════════════════
+    (function setupLogin() {
+        const VALID_EMAIL    = 'TCDS@gmail.com';
+        const VALID_PASSWORD = 'DGR';
+        const SESSION_KEY     = 'piloncillos_flashcards_session';
+
+        const loginScreen  = document.getElementById('login-screen');
+        const appContent   = document.getElementById('app-content');
+        const loginForm    = document.getElementById('login-form');
+        const emailInput   = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        const loginError   = document.getElementById('login-error');
+        const togglePwdBtn  = document.getElementById('toggle-password');
+        const logoutBtn     = document.getElementById('logout-btn');
+
+        function showApp() {
+            loginScreen.classList.add('hidden');
+            appContent.classList.remove('hidden');
+        }
+
+        function showLogin() {
+            appContent.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            emailInput.value = '';
+            passwordInput.value = '';
+            loginError.classList.add('hidden');
+            emailInput.focus();
+        }
+
+        // Si ya había sesión guardada (por ejemplo, app instalada sin internet), entra directo
+        if (localStorage.getItem(SESSION_KEY) === 'true') {
+            showApp();
+        } else {
+            showLogin();
+        }
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email    = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                if (email.toLowerCase() === VALID_EMAIL.toLowerCase() && password === VALID_PASSWORD) {
+                    localStorage.setItem(SESSION_KEY, 'true');
+                    loginError.classList.add('hidden');
+                    showApp();
+                } else {
+                    loginError.classList.remove('hidden');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            });
+        }
+
+        if (togglePwdBtn) {
+            togglePwdBtn.addEventListener('click', () => {
+                const isPwd = passwordInput.type === 'password';
+                passwordInput.type = isPwd ? 'text' : 'password';
+                togglePwdBtn.innerHTML = isPwd
+                    ? '<i class="ph ph-eye-slash"></i>'
+                    : '<i class="ph ph-eye"></i>';
+            });
+        }
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem(SESSION_KEY);
+                showLogin();
+            });
+        }
+    })();
+
+    // ══════════════════════════════════════════════════════════
     // MÓDULO DE ACCESIBILIDAD POR VOZ (Web Speech API)
     // Texto→Voz (TTS) para leer contenido, y Voz→Texto (STT)
     // para dictar tarjetas. Pensado para personas con dificultad

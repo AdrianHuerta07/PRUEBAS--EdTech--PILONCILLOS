@@ -1245,6 +1245,149 @@ textarea:focus {
     .hero-band h1 span { font-size: 1.2rem; }
 }
 
+/* ============================================================
+   HEADER: acciones (logout + menú)
+   ============================================================ */
+.header-actions { display: flex; align-items: center; gap: 0.5rem; }
+
+.logout-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.logout-btn:hover { background: rgba(211,79,62,0.35); border-color: rgba(211,79,62,0.6); }
+
+/* ============================================================
+   PANTALLA DE LOGIN
+   ============================================================ */
+.login-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background:
+        radial-gradient(ellipse 900px 600px at 12% -8%, rgba(36,201,143,0.35), transparent 60%),
+        radial-gradient(ellipse 800px 700px at 100% 18%, rgba(28,110,242,0.22), transparent 55%),
+        radial-gradient(ellipse 700px 900px at 85% 95%, rgba(36,201,143,0.22), transparent 60%),
+        linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-mid) 55%, var(--bg-deep) 100%);
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    background: var(--glass-tint-dark);
+    border: 1px solid var(--glass-fill-soft);
+    -webkit-backdrop-filter: blur(22px);
+    backdrop-filter: blur(22px);
+    border-radius: var(--r-xl);
+    box-shadow: var(--glass-shadow);
+    padding: 2.2rem 2rem 2rem;
+}
+
+.login-brand { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.4rem; margin-bottom: 1.8rem; }
+.login-brand .brand-mark {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    font-size: 1.7rem;
+    margin-bottom: 0.4rem;
+}
+.login-brand h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.7rem;
+    color: #fff;
+    letter-spacing: -0.3px;
+}
+.login-brand p {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.62);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.login-form { display: flex; flex-direction: column; gap: 0.35rem; }
+.login-form label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    margin: 0.6rem 0 0.1rem;
+}
+.login-form label:first-of-type { margin-top: 0; }
+
+.login-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.login-input-wrap i:first-child {
+    position: absolute;
+    left: 14px;
+    color: rgba(255,255,255,0.5);
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+.login-input-wrap input {
+    width: 100%;
+    padding: 0.85rem 2.8rem 0.85rem 2.6rem;
+    border-radius: var(--r-md);
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+}
+.login-input-wrap input::placeholder { color: rgba(255,255,255,0.4); }
+.login-input-wrap input:focus {
+    outline: none;
+    border-color: var(--leaf);
+    background: rgba(255,255,255,0.12);
+}
+
+.toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.55);
+    font-size: 1.15rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 6px;
+}
+.toggle-password-btn:hover { color: #fff; }
+
+.login-error {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #ff9b8a;
+    background: rgba(211,79,62,0.18);
+    border: 1px solid rgba(211,79,62,0.4);
+    border-radius: var(--r-md);
+    padding: 0.6rem 0.8rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-top: 0.9rem;
+}
+
+.login-submit-btn { margin-top: 1.3rem; }
+
 @media (max-width: 600px) {
     .page { padding: 1.2rem 0.8rem 2.4rem; }
     .site-header-inner { padding: 0.8rem 1rem; }
@@ -1252,6 +1395,8 @@ textarea:focus {
     .brand-sub { font-size: 0.62rem; }
     .brand-mark { width: 36px; height: 36px; font-size: 1.1rem; }
     .menu-toggle { width: 40px; height: 40px; font-size: 1.15rem; }
+    .logout-btn { width: 40px; height: 40px; font-size: 1.1rem; }
+    .login-card { padding: 1.8rem 1.4rem 1.6rem; }
 
     .content-card { padding: 1.2rem 1rem 1.5rem; }
     .hero-band { padding: 1rem 0.5rem 0.2rem; }
