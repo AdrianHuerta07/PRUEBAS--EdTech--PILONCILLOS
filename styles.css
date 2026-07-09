@@ -1360,7 +1360,9 @@ textarea:focus {
 
 .toggle-password-btn {
     position: absolute;
-    right: 10px;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     color: rgba(255,255,255,0.55);
@@ -1368,9 +1370,13 @@ textarea:focus {
     cursor: pointer;
     display: flex;
     align-items: center;
-    padding: 6px;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 8px;
 }
-.toggle-password-btn:hover { color: #fff; }
+.toggle-password-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
 
 .login-error {
     display: flex;
