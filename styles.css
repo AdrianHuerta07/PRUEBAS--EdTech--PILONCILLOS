@@ -1360,9 +1360,7 @@ textarea:focus {
 
 .toggle-password-btn {
     position: absolute;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 10px;
     background: none;
     border: none;
     color: rgba(255,255,255,0.55);
@@ -1370,13 +1368,9 @@ textarea:focus {
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border-radius: 8px;
+    padding: 6px;
 }
-.toggle-password-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.toggle-password-btn:hover { color: #fff; }
 
 .login-error {
     display: flex;
@@ -1431,4 +1425,23 @@ textarea:focus {
     .bar-left { justify-content: space-between; }
     .quiz-card { padding: 1.5rem 1.2rem; }
     #practice-question { font-size: 1.25rem; }
+}
+/* ══════════════════════════════════════════════════════
+   ESTILOS PARA SWEETALERT2 (Apego al diseño Piloncillos)
+   ══════════════════════════════════════════════════════ */
+div:where(.swal2-container) div:where(.swal2-popup) {
+    border-radius: 1.5rem !important; 
+    font-family: 'Nunito', sans-serif !important;
+    color: var(--ink) !important;
+}
+
+div:where(.swal2-container) h2:where(.swal2-title) {
+    font-family: 'Baloo 2', sans-serif !important;
+    color: var(--forest) !important;
+    font-size: 1.6rem !important;
+}
+
+/* Espaciado extra para que el botón respire bien */
+div:where(.swal2-container) div:where(.swal2-actions) {
+    margin-top: 1.5rem !important;
 }

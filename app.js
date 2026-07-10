@@ -502,8 +502,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Generar tarjetas ──────────────────────────────────────
     generateBtn.addEventListener('click', () => {
         const raw = textInput.value.trim();
+        
+        // 🔹 ALERTA ESTÉTICA 1: Formato incorrecto
         if (!raw.includes(':')) {
-            alert('Usa el formato: Pregunta : Respuesta');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Formato requerido',
+                text: 'Usa el formato: Pregunta : Respuesta',
+                iconColor: '#d34f3e', /* Usa el color rojo de error de tu paleta (--err) */
+                confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Entendido',
+                buttonsStyling: false, /* Apagamos el botón azul feo por defecto */
+                customClass: {
+                    confirmButton: 'btn-primary' /* Le ponemos el botón verde de Piloncillos */
+                }
+            });
             return;
         }
 
@@ -523,8 +535,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // 🔹 ALERTA ESTÉTICA 2: No se encontraron tarjetas
         if (allCards.length === 0) {
-            alert('No se encontraron tarjetas válidas. Revisa el formato: Pregunta : Respuesta');
+            Swal.fire({
+                icon: 'error',
+                title: '¡Ups!',
+                text: 'No se encontraron tarjetas válidas. Revisa el formato: Pregunta : Respuesta',
+                iconColor: '#d34f3e',
+                confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Revisar',
+                buttonsStyling: false, 
+                customClass: {
+                    confirmButton: 'btn-primary' 
+                }
+            });
             return;
         }
 

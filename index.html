@@ -326,7 +326,13 @@
 
     </div> <!-- /#app-content -->
 
+    <!-- 1. Primero cargamos SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- 2. Luego cargamos nuestra aplicación -->
     <script src="app.js"></script>
+    
+    <!-- 3. Finalmente el Service Worker -->
     <script>
         // Registro del Service Worker para funcionamiento offline
         if ('serviceWorker' in navigator) {
