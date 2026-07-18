@@ -7,49 +7,21 @@
 
 /* ── Variables ─────────────────────────────────────────────── */
 :root {
-    --forest:       #0b3d2e;   /* verde institucional oscuro (header) */
-    --forest-2:     #0f6b4c;   /* verde medio */
-    --leaf:         #37b07f;   /* verde acento vivo */
-    --leaf-light:   #e6f5ee;   /* verde muy claro, fondos de sección */
-    --sand:         #f7f8f5;   /* fondo general cálido-neutro (legado, ya no se usa como fondo principal) */
-    --white:        #ffffff;
-
-    --ink:          #0d1b16;   /* texto principal, casi negro-verde */
-    --ink-mid:      #4d5c56;
-    --ink-low:      #93a39c;
-
-    --ok:           #1f9d5c;
-    --ok-bg:        #e6f7ee;
-    --err:          #d34f3e;
-    --err-bg:       #fceceb;
-
-    --line:         #e1e6e2;
-
-    /* ── Liquid glass: fondo vivo + superficies de vidrio esmerilado ── */
-    --bg-deep:      #06261c;   /* base del gradiente ambiental, casi negro-verde */
-    --bg-mid:       #0f4d38;
-    --bg-glow:      #24c98f;   /* halo de luz que "flota" detrás del vidrio */
-    --bg-glow-2:    #1c6ef2;   /* segundo halo, azul frío, contraste con el verde */
-
-    --glass-fill:      rgba(255,255,255,0.14);
-    --glass-fill-soft: rgba(255,255,255,0.08);
-    --glass-border:    rgba(255,255,255,0.34);
-    --glass-highlight: rgba(255,255,255,0.65);
-    --glass-shadow:    0 8px 32px rgba(4,26,19,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
-
-    --glass-tint-dark:      rgba(6,38,28,0.42);
-    --glass-tint-dark-border: rgba(255,255,255,0.14);
-
-    --font-display: 'Baloo 2', 'Nunito', system-ui, sans-serif;
-    --font-body:    'Nunito', system-ui, -apple-system, sans-serif;
-
-    --r-xl: 26px;
-    --r-lg: 18px;
-    --r-md: 13px;
-    --r-pill: 999px;
-
-    --shadow-card: 0 10px 30px rgba(11,61,46,0.09), 0 2px 8px rgba(11,61,46,0.06);
-    --shadow-lift: 0 16px 40px rgba(11,61,46,0.16);
+    /* ── Duolingo Dark Palette (Más vibrante) ── */
+    --duo-green:      #58cc02;
+    --duo-green-dark: #58a700;
+    --duo-blue:       #1cb0f6;
+    --duo-blue-dark:  #1899d6;
+    --duo-red:        #ff4b4b;
+    --duo-red-dark:   #d32f2f;
+    --duo-bg-deep:    #131f24; 
+    
+    /* ── Glassmorphism Mejorado (Degradados en vez de color sólido) ── */
+    --glass-fill:      linear-gradient(135deg, rgba(38, 56, 64, 0.8), rgba(25, 38, 43, 0.6));
+    --glass-fill-soft: rgba(38, 56, 64, 0.4);
+    --glass-border:    rgba(255, 255, 255, 0.15);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
+    --glass-shadow:    0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */
@@ -57,19 +29,19 @@
 
 html { scroll-behavior: smooth; }
 
+/* Eliminamos halos ruidosos y dejamos una atmósfera oscura y limpia */
 body {
-    font-family: var(--font-body);
-    background:
-        radial-gradient(ellipse 900px 600px at 12% -8%, rgba(36,201,143,0.35), transparent 60%),
-        radial-gradient(ellipse 800px 700px at 100% 18%, rgba(28,110,242,0.22), transparent 55%),
-        radial-gradient(ellipse 700px 900px at 85% 95%, rgba(36,201,143,0.22), transparent 60%),
-        linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-mid) 55%, var(--bg-deep) 100%);
-    background-attachment: fixed;
-    color: var(--ink);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    position: relative;
+    background: 
+        radial-gradient(circle at 10% 0%, rgba(28, 176, 246, 0.08), transparent 40%),
+        radial-gradient(circle at 90% 100%, rgba(88, 204, 2, 0.08), transparent 40%),
+        var(--duo-bg-deep) !important;
+    color: #ffffff;
+}
+
+/* El header flotante se oscurece para no distraer */
+.site-header {
+    background: rgba(19, 31, 36, 0.7) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
 }
 
 /* Halos de luz ambiental flotante — el "signature" del liquid glass:
@@ -1426,22 +1398,84 @@ textarea:focus {
     .quiz-card { padding: 1.5rem 1.2rem; }
     #practice-question { font-size: 1.25rem; }
 }
-/* ══════════════════════════════════════════════════════
-   ESTILOS PARA SWEETALERT2 (Apego al diseño Piloncillos)
-   ══════════════════════════════════════════════════════ */
-div:where(.swal2-container) div:where(.swal2-popup) {
-    border-radius: 1.5rem !important; 
-    font-family: 'Nunito', sans-serif !important;
-    color: var(--ink) !important;
+/* ── CONTENEDORES PRINCIPALES ── */
+.content-card, .login-card, .voice-settings-panel, .quiz-card {
+    background: var(--glass-fill) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-top: 1px solid rgba(255,255,255,0.25) !important; /* Luz superior para dar volumen */
+    box-shadow: var(--glass-shadow) !important;
 }
 
-div:where(.swal2-container) h2:where(.swal2-title) {
-    font-family: 'Baloo 2', sans-serif !important;
-    color: var(--forest) !important;
-    font-size: 1.6rem !important;
+/* ── BOTÓN PRINCIPAL ESTILO DUOLINGO ── */
+.btn-primary {
+    background: var(--duo-green) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 16px !important;
+    /* Sombra 3D sólida + halo de brillo sutil */
+    box-shadow: 0 5px 0 var(--duo-green-dark), 0 10px 20px rgba(88, 204, 2, 0.2) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 800 !important;
+    transform: translateY(0);
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
 }
 
-/* Espaciado extra para que el botón respire bien */
-div:where(.swal2-container) div:where(.swal2-actions) {
-    margin-top: 1.5rem !important;
+.btn-primary:active {
+    transform: translateY(5px) !important;
+    box-shadow: 0 0px 0 var(--duo-green-dark), 0 5px 10px rgba(88, 204, 2, 0.2) !important;
+}
+
+/* ── OPCIONES DEL QUIZ (MC-OPTIONS) ── */
+.mc-option {
+    background: var(--glass-fill-soft) !important;
+    border: 2px solid var(--glass-border) !important;
+    border-radius: 16px !important;
+    color: white !important;
+    /* Efecto de tecla oscura */
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.4) !important;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.mc-option:hover:not(:disabled) {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(255,255,255,0.3) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+.mc-option:active:not(:disabled) {
+    transform: translateY(4px) !important;
+    box-shadow: 0 0px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ── RESPUESTAS CORRECTAS / INCORRECTAS (Glow) ── */
+.mc-option.correct {
+    background: rgba(88, 204, 2, 0.1) !important;
+    border-color: var(--duo-green) !important;
+    color: var(--duo-green) !important;
+    box-shadow: 0 4px 0 var(--duo-green-dark), inset 0 0 15px rgba(88, 204, 2, 0.1) !important;
+}
+
+.mc-option.wrong {
+    background: rgba(255, 75, 75, 0.1) !important;
+    border-color: var(--duo-red) !important;
+    color: var(--duo-red) !important;
+    box-shadow: 0 4px 0 var(--duo-red-dark), inset 0 0 15px rgba(255, 75, 75, 0.1) !important;
+}
+
+/* ── FLASHCARDS (ESTUDIO) ── */
+.card-face {
+    background: var(--glass-fill) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-top: 1px solid rgba(255,255,255,0.2) !important;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.3), var(--glass-shadow) !important;
+    border-radius: 20px !important;
+}
+
+.card-back {
+    background: linear-gradient(135deg, rgba(28, 176, 246, 0.2), rgba(24, 153, 214, 0.1)) !important;
+    border-color: var(--duo-blue) !important;
 }
