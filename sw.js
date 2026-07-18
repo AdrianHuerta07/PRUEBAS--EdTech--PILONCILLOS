@@ -4,7 +4,7 @@
 // completamente offline una vez visitada la primera vez.
 // ══════════════════════════════════════════════════════════
 
-const CACHE_NAME = 'piloncillos-flashcards-v16';
+const CACHE_NAME = 'piloncillos-flashcards-v19';
 
 // Archivos propios de la app (siempre disponibles offline)
 const CORE_ASSETS = [
@@ -13,8 +13,7 @@ const CORE_ASSETS = [
     './app.js',
     './styles.css',
     './manifest.json',
-    './icon-192.png',
-    './icon-512.png'
+    './icon.svg'
 ];
 
 // Recursos externos (fuentes e iconos). Si no hay internet en la
@@ -30,7 +29,6 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(async (cache) => {
             await cache.addAll(CORE_ASSETS);
-            // Externos: se intentan cachear pero no bloquean la instalación si fallan
             await Promise.allSettled(
                 EXTERNAL_ASSETS.map(url => cache.add(url).catch(() => null))
             );
@@ -49,13 +47,9 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Estrategia: "cache first, network fallback" para el app shell,
-// y "network first, cache fallback" para todo lo demás (por si
-// las fuentes/iconos cambian de versión con conexión disponible).
 self.addEventListener('fetch', (event) => {
     const req = event.request;
 
-    // Solo interceptar GET
     if (req.method !== 'GET') return;
 
     const isCoreAsset = CORE_ASSETS.some((asset) => req.url.endsWith(asset.replace('./', '')));

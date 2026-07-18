@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const emailInput   = document.getElementById('login-email');
         const passwordInput = document.getElementById('login-password');
         const loginError   = document.getElementById('login-error');
+        const loginErrorText = document.getElementById('login-error-text');
         const togglePwdBtn  = document.getElementById('toggle-password');
         const logoutBtn     = document.getElementById('logout-btn');
 
@@ -44,14 +45,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loginForm) {
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
+                loginError.classList.add('hidden');
+
                 const email    = emailInput.value.trim();
                 const password = passwordInput.value;
+
+                // Validación manual: ¿El correo está vacío?
+                if (!email) {
+                    loginErrorText.textContent = "Por favor, completa el correo institucional.";
+                    loginError.classList.remove('hidden');
+                    emailInput.focus();
+                    return;
+                }
+
+                // Validación manual: ¿La contraseña está vacía?
+                if (!password) {
+                    loginErrorText.textContent = "Por favor, ingresa tu contraseña.";
+                    loginError.classList.remove('hidden');
+                    passwordInput.focus();
+                    return;
+                }
 
                 if (email.toLowerCase() === VALID_EMAIL.toLowerCase() && password === VALID_PASSWORD) {
                     localStorage.setItem(SESSION_KEY, 'true');
                     loginError.classList.add('hidden');
                     showApp();
                 } else {
+                    loginErrorText.textContent = "Correo o contraseña incorrectos.";
                     loginError.classList.remove('hidden');
                     passwordInput.value = '';
                     passwordInput.focus();
@@ -82,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Texto→Voz (TTS) para leer contenido, y Voz→Texto (STT)
     // para dictar tarjetas. Pensado para personas con dificultad
     // para leer o que prefieren usar la app hablando.
-    // ══════════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════
     const VoiceA11y = (() => {
         const synth = window.speechSynthesis || null;
         let voices = [];
@@ -126,14 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Devuelve una promesa que resuelve cuando hay voces disponibles
-        // (fix Brave/Chrome: getVoices() suele venir vacío al cargar la página)
         function waitForVoices(timeoutMs = 2500) {
             return new Promise((resolve) => {
                 if (!synth) return resolve();
                 if (voices.length > 0) return resolve();
                 voicesReadyResolvers.push(resolve);
-                // Fallback: si el evento voiceschanged nunca llega, no bloquear para siempre
                 setTimeout(resolve, timeoutMs);
             });
         }
@@ -154,8 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // ── keepAlive: fix bug de Chromium/Brave donde el synth se congela
-        // en textos largos (>15s). Hace pause/resume periódico mientras habla.
         function startKeepAlive() {
             stopKeepAlive();
             keepAliveTimer = setInterval(() => {
@@ -175,15 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
         async function speak(text, el) {
             if (!synth || !text) return;
 
-            // Fix Brave/Chrome: espera a que existan voces antes de intentar hablar
             await waitForVoices();
 
             synth.cancel();
             clearSpeakingClass();
             stopKeepAlive();
 
-            // Fix Brave/Chrome: un margen mínimo tras cancel() evita que el
-            // siguiente speak() se pierda o quede en un estado roto.
             setTimeout(() => {
                 const utter = new SpeechSynthesisUtterance(text);
                 utter.rate = rate;
@@ -205,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     updateMasterUI(false);
                 };
                 utter.onerror = (e) => {
-                    // 'interrupted' y 'canceled' son normales al llamar cancel(); ignorar
                     if (e.error === 'interrupted' || e.error === 'canceled') return;
                     stopKeepAlive();
                     clearSpeakingClass();
@@ -238,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
         function isMasterEnabled() { return masterEnabled; }
         function isSupported() { return !!synth; }
 
-        // ── Reconocimiento de voz (dictado) ──────────────────
         const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 
         function createRecognizer(onResult, onEnd, onError) {
@@ -256,8 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             rec.onend = () => { if (onEnd) onEnd(); };
             rec.onerror = (e) => {
-                // Mensajes específicos para que el usuario sepa qué pasó
-                // (Brave bloquea el micrófono por Escudos con más frecuencia que Chrome)
                 let reason = 'unknown';
                 if (e.error === 'not-allowed' || e.error === 'permission-denied') reason = 'permission';
                 else if (e.error === 'no-speech') reason = 'no-speech';
@@ -279,7 +287,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     })();
 
-    // ── Configurar controles del panel de accesibilidad ───────
     (function setupVoiceBar() {
         const masterToggle   = document.getElementById('voice-master-toggle');
         const stopBtn        = document.getElementById('voice-stop-btn');
@@ -342,7 +349,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     })();
 
-    // ── Dictado por voz en el textarea de entrada ─────────────
     (function setupDictation() {
         const dictateBtn    = document.getElementById('dictate-btn');
         const dictateStatus = document.getElementById('dictate-status');
@@ -355,7 +361,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // El micrófono solo funciona en contextos seguros: https:// o localhost
         const isSecure = window.isSecureContext;
         if (!isSecure) {
             dictateBtn.classList.add('unsupported');
@@ -384,8 +389,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             recognizer = VoiceA11y.createRecognizer(
                 (text) => {
-                    // Añade el texto dictado como nueva línea, respetando el formato
-                    // "Pregunta : Respuesta" si el usuario lo dice con la palabra "dos puntos"
                     let cleaned = text.replace(/\bdos puntos\b/gi, ':').trim();
                     const current = textInputEl.value;
                     textInputEl.value = current && !current.endsWith('\n')
@@ -421,14 +424,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     })();
 
-    // ── Estado ────────────────────────────────────────────────
     let allCards          = [];
     let poolPracticeCards = [];
     let currentCard       = null;
     let practiceHistory   = [];
     let stats             = { correct: 0, wrong: 0, skipped: 0 };
 
-    // ── DOM ───────────────────────────────────────────────────
     const viewInput    = document.getElementById('view-input');
     const viewStudy    = document.getElementById('view-study');
     const viewPractice = document.getElementById('view-practice');
@@ -460,13 +461,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyPromptBtn      = document.getElementById('copy-prompt-btn');
     const aiPromptText       = document.getElementById('ai-prompt-text');
     
-    // Panel de instrucciones
     const instructionsToggle  = document.getElementById('instructions-toggle');
     const instructionsContent = document.getElementById('instructions-content');
 
-    // ── Atajos de Teclado Globales e Inputs ───────────────────
-    
-    // Generar tarjetas con Ctrl + Enter (o Cmd + Enter en Mac)
     textInput.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             e.preventDefault();
@@ -474,7 +471,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ── Acordeón de Instrucciones ─────────────────────────────
     if (instructionsToggle && instructionsContent) {
         instructionsToggle.addEventListener('click', () => {
             instructionsToggle.classList.toggle('open');
@@ -482,7 +478,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Copiar prompt de IA ───────────────────────────────────
     copyPromptBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(aiPromptText.textContent.trim()).then(() => {
             copyPromptBtn.innerHTML = '<i class="ph ph-check"></i>';
@@ -499,21 +494,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ── Generar tarjetas ──────────────────────────────────────
     generateBtn.addEventListener('click', () => {
         const raw = textInput.value.trim();
         
-        // 🔹 ALERTA ESTÉTICA 1: Formato incorrecto
         if (!raw.includes(':')) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Formato requerido',
                 text: 'Usa el formato: Pregunta : Respuesta',
-                iconColor: '#d34f3e', /* Usa el color rojo de error de tu paleta (--err) */
+                iconColor: '#d34f3e',
                 confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Entendido',
-                buttonsStyling: false, /* Apagamos el botón azul feo por defecto */
+                buttonsStyling: false,
                 customClass: {
-                    confirmButton: 'btn-primary' /* Le ponemos el botón verde de Piloncillos */
+                    confirmButton: 'btn-primary'
                 }
             });
             return;
@@ -535,7 +528,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 🔹 ALERTA ESTÉTICA 2: No se encontraron tarjetas
         if (allCards.length === 0) {
             Swal.fire({
                 icon: 'error',
@@ -555,13 +547,11 @@ document.addEventListener('DOMContentLoaded', () => {
         switchView(viewStudy);
     });
 
-    // ── Navegación ────────────────────────────────────────────
     backBtn.addEventListener('click',         () => switchView(viewInput));
     startPracticeBtn.addEventListener('click', initPracticeSession);
     exitPracticeBtn.addEventListener('click',  () => switchView(viewStudy));
     retryBtn.addEventListener('click',         () => switchView(viewStudy));
 
-    // ── Sesión de práctica ────────────────────────────────────
     function initPracticeSession() {
         poolPracticeCards = [...allCards];
         practiceHistory   = [];
@@ -591,11 +581,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         buildOptions(currentCard);
 
-        // Si el modo "Leer en voz alta" está activo, lee la pregunta automáticamente
         VoiceA11y.autoSpeak(currentCard.q, document.getElementById('listen-question-btn'));
     }
 
-    // Botón manual para escuchar la pregunta del quiz en cualquier momento
     const listenQuestionBtn = document.getElementById('listen-question-btn');
     if (listenQuestionBtn) {
         listenQuestionBtn.addEventListener('click', () => {
@@ -676,7 +664,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     nextBtn.addEventListener('click', loadNextCard);
 
-    // ── Resultados ────────────────────────────────────────────
     function showResults() {
         switchView(viewResults);
 
@@ -721,11 +708,10 @@ document.addEventListener('DOMContentLoaded', () => {
         VoiceA11y.autoSpeak(summaryText, listenResultsBtn);
     }
 
-    // ── Renderizar tarjeta de estudio ─────────────────────────
     function renderCard(q, a) {
         const wrap      = document.createElement('div');
         wrap.className  = 'card-container';
-        wrap.setAttribute('tabindex', '0'); // Enfocable con Tab
+        wrap.setAttribute('tabindex', '0');
 
         wrap.innerHTML  = `
             <div class="card">
@@ -744,13 +730,11 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Voltear con click (pero no si se pulsó el botón de audio)
         wrap.addEventListener('click', (e) => {
             if (e.target.closest('.card-listen-btn')) return;
             wrap.querySelector('.card').classList.toggle('is-flipped');
         });
 
-        // Voltear con teclado (Enter o Espacio)
         wrap.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -758,7 +742,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Botones de audio: leen la pregunta o la respuesta sin voltear la tarjeta
         const frontBtn = wrap.querySelector('.card-front .card-listen-btn');
         const backBtn  = wrap.querySelector('.card-back .card-listen-btn');
         frontBtn.addEventListener('click', (e) => {
@@ -773,16 +756,14 @@ document.addEventListener('DOMContentLoaded', () => {
         cardsGrid.appendChild(wrap);
     }
 
-    // Escapa HTML para insertar texto de usuario de forma segura
     function escapeHtml(str) {
         const div = document.createElement('div');
         div.textContent = str;
         return div.innerHTML;
     }
 
-    // ── Cambiar vista ─────────────────────────────────────────
     function switchView(next) {
-        VoiceA11y.stop(); // evita que se solape audio de la vista anterior
+        VoiceA11y.stop();
         [viewInput, viewStudy, viewPractice, viewResults].forEach(v => {
             v.classList.remove('active');
             v.classList.add('hidden');
@@ -791,9 +772,7 @@ document.addEventListener('DOMContentLoaded', () => {
         next.classList.add('active');
     }
 
-   // ── Magia al regresar a la pestaña (CORREGIDO) ────────────
     document.addEventListener('visibilitychange', () => {
-        // Solo enfoca el texto si la pestaña acaba de volverse visible tras estar oculta
         if (document.visibilityState === 'visible' && viewInput.classList.contains('active')) {
             textInput.focus();
         }
