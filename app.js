@@ -1,23 +1,36 @@
+// ══════════════════════════════════════════════════════════
+// CONFIGURACIÓN E INICIALIZACIÓN DE FIREBASE
+// ══════════════════════════════════════════════════════════
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDUDb2K_2NjX7sW5xfi51wtOSHKg_oI6Rw",
+  authDomain: "flashcards-81501.firebaseapp.com",
+  projectId: "flashcards-81501",
+  storageBucket: "flashcards-81501.firebasestorage.app",
+  messagingSenderId: "327444607564",
+  appId: "1:327444607564:web:c9c55dbe994d69a4b03ae9",
+  measurementId: "G-N0ZTSLN8NQ"
+};
+
+// Inicializar Firebase servicios
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // ══════════════════════════════════════════════════════════
-    // MÓDULO DE LOGIN
-    // Credenciales fijas de acceso. Se valida localmente y se
-    // recuerda la sesión en localStorage para no pedir login
-    // en cada visita (útil en modo offline / app instalada).
+    // MÓDULO DE LOGIN (Firebase Auth con Google)
     // ══════════════════════════════════════════════════════════
     (function setupLogin() {
-        const VALID_EMAIL    = 'TCDS@gmail.com';
-        const VALID_PASSWORD = 'DGR';
-        const SESSION_KEY     = 'piloncillos_flashcards_session';
-
         const loginScreen  = document.getElementById('login-screen');
         const appContent   = document.getElementById('app-content');
-        const loginForm    = document.getElementById('login-form');
-        const emailInput   = document.getElementById('login-email');
-        const passwordInput = document.getElementById('login-password');
+        const googleLoginBtn = document.getElementById('google-login-btn');
         const loginError   = document.getElementById('login-error');
-        const togglePwdBtn  = document.getElementById('toggle-password');
         const logoutBtn     = document.getElementById('logout-btn');
 
         function showApp() {
@@ -28,69 +41,58 @@ document.addEventListener('DOMContentLoaded', () => {
         function showLogin() {
             appContent.classList.add('hidden');
             loginScreen.classList.remove('hidden');
-            emailInput.value = '';
-            passwordInput.value = '';
             loginError.classList.add('hidden');
-            emailInput.focus();
         }
 
-        // Si ya había sesión guardada (por ejemplo, app instalada sin internet), entra directo
-        if (localStorage.getItem(SESSION_KEY) === 'true') {
-            showApp();
-        } else {
-            showLogin();
-        }
+        // Observador en tiempo real del estado de Firebase Auth
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // El usuario ha iniciado sesión con éxito
+                console.log("Usuario autenticado:", user.displayName, user.email);
+                showApp();
+            } else {
+                // No hay usuario activo, mandar a la pantalla de Login
+                showLogin();
+            }
+        });
 
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const email    = emailInput.value.trim();
-                const password = passwordInput.value;
-
-                if (email.toLowerCase() === VALID_EMAIL.toLowerCase() && password === VALID_PASSWORD) {
-                    localStorage.setItem(SESSION_KEY, 'true');
+        // Evento para Iniciar Sesión con la ventana flotante de Google
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', async () => {
+                try {
                     loginError.classList.add('hidden');
-                    showApp();
-                } else {
+                    await signInWithPopup(auth, googleProvider);
+                    // El observador (onAuthStateChanged) se encargará de mostrar la app automáticamente
+                } catch (error) {
+                    console.error("Error en Firebase Auth con Google:", error.message);
                     loginError.classList.remove('hidden');
-                    passwordInput.value = '';
-                    passwordInput.focus();
                 }
             });
         }
 
-        if (togglePwdBtn) {
-            togglePwdBtn.addEventListener('click', () => {
-                const isPwd = passwordInput.type === 'password';
-                passwordInput.type = isPwd ? 'text' : 'password';
-                togglePwdBtn.innerHTML = isPwd
-                    ? '<i class="ph ph-eye-slash"></i>'
-                    : '<i class="ph ph-eye"></i>';
-            });
-        }
-
+        // Evento para Cerrar Sesión de Firebase
         if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                localStorage.removeItem(SESSION_KEY);
-                showLogin();
+            logoutBtn.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                } catch (error) {
+                    console.error("Error al cerrar sesión:", error.message);
+                }
             });
         }
     })();
 
     // ══════════════════════════════════════════════════════════
     // MÓDULO DE ACCESIBILIDAD POR VOZ (Web Speech API)
-    // Texto→Voz (TTS) para leer contenido, y Voz→Texto (STT)
-    // para dictar tarjetas. Pensado para personas con dificultad
-    // para leer o que prefieren usar la app hablando.
     // ══════════════════════════════════════════════════════════
     const VoiceA11y = (() => {
         const synth = window.speechSynthesis || null;
         let voices = [];
         let selectedVoiceURI = null;
         let rate = 0.95;
-        let masterEnabled = false; // "Leer en voz alta" global activado
+        let masterEnabled = false; 
         let currentSpeakingEl = null;
-        let keepAliveTimer = null;  // Fix bug Chromium/Brave: evita que synth se congele
+        let keepAliveTimer = null;  
         let voicesReadyResolvers = [];
 
         const announcer = document.getElementById('aria-announcer');
@@ -126,14 +128,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Devuelve una promesa que resuelve cuando hay voces disponibles
-        // (fix Brave/Chrome: getVoices() suele venir vacío al cargar la página)
         function waitForVoices(timeoutMs = 2500) {
             return new Promise((resolve) => {
                 if (!synth) return resolve();
                 if (voices.length > 0) return resolve();
                 voicesReadyResolvers.push(resolve);
-                // Fallback: si el evento voiceschanged nunca llega, no bloquear para siempre
                 setTimeout(resolve, timeoutMs);
             });
         }
@@ -154,8 +153,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // ── keepAlive: fix bug de Chromium/Brave donde el synth se congela
-        // en textos largos (>15s). Hace pause/resume periódico mientras habla.
         function startKeepAlive() {
             stopKeepAlive();
             keepAliveTimer = setInterval(() => {
@@ -174,16 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         async function speak(text, el) {
             if (!synth || !text) return;
-
-            // Fix Brave/Chrome: espera a que existan voces antes de intentar hablar
             await waitForVoices();
 
             synth.cancel();
             clearSpeakingClass();
             stopKeepAlive();
 
-            // Fix Brave/Chrome: un margen mínimo tras cancel() evita que el
-            // siguiente speak() se pierda o quede en un estado roto.
             setTimeout(() => {
                 const utter = new SpeechSynthesisUtterance(text);
                 utter.rate = rate;
@@ -198,14 +191,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateMasterUI(true);
 
                 utter.onstart = () => startKeepAlive();
-
                 utter.onend = () => {
                     stopKeepAlive();
                     clearSpeakingClass();
                     updateMasterUI(false);
                 };
                 utter.onerror = (e) => {
-                    // 'interrupted' y 'canceled' son normales al llamar cancel(); ignorar
                     if (e.error === 'interrupted' || e.error === 'canceled') return;
                     stopKeepAlive();
                     clearSpeakingClass();
@@ -238,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
         function isMasterEnabled() { return masterEnabled; }
         function isSupported() { return !!synth; }
 
-        // ── Reconocimiento de voz (dictado) ──────────────────
         const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 
         function createRecognizer(onResult, onEnd, onError) {
@@ -256,8 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             rec.onend = () => { if (onEnd) onEnd(); };
             rec.onerror = (e) => {
-                // Mensajes específicos para que el usuario sepa qué pasó
-                // (Brave bloquea el micrófono por Escudos con más frecuencia que Chrome)
                 let reason = 'unknown';
                 if (e.error === 'not-allowed' || e.error === 'permission-denied') reason = 'permission';
                 else if (e.error === 'no-speech') reason = 'no-speech';
@@ -267,8 +255,6 @@ document.addEventListener('DOMContentLoaded', () => {
             };
             return rec;
         }
-
-        function recognitionSupported() { return !!SpeechRecognitionCtor; }
 
         return {
             announce, speak, stop, autoSpeak,
@@ -355,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // El micrófono solo funciona en contextos seguros: https:// o localhost
         const isSecure = window.isSecureContext;
         if (!isSecure) {
             dictateBtn.classList.add('unsupported');
@@ -384,8 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             recognizer = VoiceA11y.createRecognizer(
                 (text) => {
-                    // Añade el texto dictado como nueva línea, respetando el formato
-                    // "Pregunta : Respuesta" si el usuario lo dice con la palabra "dos puntos"
                     let cleaned = text.replace(/\bdos puntos\b/gi, ':').trim();
                     const current = textInputEl.value;
                     textInputEl.value = current && !current.endsWith('\n')
@@ -402,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     isRecording = false;
                     dictateBtn.classList.remove('recording');
                     const messages = {
-                        'permission': 'Micrófono bloqueado. Revisa el icono 🦁 de Brave o los permisos del sitio y actívalo.',
+                        'permission': 'Micrófono bloqueado. Revisa los permisos del sitio y actívalo.',
                         'no-mic': 'No se detectó ningún micrófono conectado.',
                         'network': 'Problema de conexión al reconocer la voz. Intenta de nuevo.',
                         'no-speech': 'No se detectó audio. Intenta de nuevo.',
@@ -460,13 +443,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyPromptBtn      = document.getElementById('copy-prompt-btn');
     const aiPromptText       = document.getElementById('ai-prompt-text');
     
-    // Panel de instrucciones
     const instructionsToggle  = document.getElementById('instructions-toggle');
     const instructionsContent = document.getElementById('instructions-content');
 
-    // ── Atajos de Teclado Globales e Inputs ───────────────────
-    
-    // Generar tarjetas con Ctrl + Enter (o Cmd + Enter en Mac)
+    // Generar tarjetas con Ctrl + Enter
     textInput.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
             e.preventDefault();
@@ -474,7 +454,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ── Acordeón de Instrucciones ─────────────────────────────
     if (instructionsToggle && instructionsContent) {
         instructionsToggle.addEventListener('click', () => {
             instructionsToggle.classList.toggle('open');
@@ -482,7 +461,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── Copiar prompt de IA ───────────────────────────────────
     copyPromptBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(aiPromptText.textContent.trim()).then(() => {
             copyPromptBtn.innerHTML = '<i class="ph ph-check"></i>';
@@ -499,22 +477,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ── Generar tarjetas ──────────────────────────────────────
     generateBtn.addEventListener('click', () => {
         const raw = textInput.value.trim();
         
-        // 🔹 ALERTA ESTÉTICA 1: Formato incorrecto
         if (!raw.includes(':')) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Formato requerido',
                 text: 'Usa el formato: Pregunta : Respuesta',
-                iconColor: '#d34f3e', /* Usa el color rojo de error de tu paleta (--err) */
+                iconColor: '#d34f3e', 
                 confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Entendido',
-                buttonsStyling: false, /* Apagamos el botón azul feo por defecto */
-                customClass: {
-                    confirmButton: 'btn-primary' /* Le ponemos el botón verde de Piloncillos */
-                }
+                buttonsStyling: false, 
+                customClass: { confirmButton: 'btn-primary' }
             });
             return;
         }
@@ -535,18 +509,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 🔹 ALERTA ESTÉTICA 2: No se encontraron tarjetas
         if (allCards.length === 0) {
             Swal.fire({
                 icon: 'error',
                 title: '¡Ups!',
-                text: 'No se encontraron tarjetas válidas. Revisa el formato: Pregunta : Respuesta',
+                text: 'No se encontraron tarjetas válidas.',
                 iconColor: '#d34f3e',
                 confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Revisar',
                 buttonsStyling: false, 
-                customClass: {
-                    confirmButton: 'btn-primary' 
-                }
+                customClass: { confirmButton: 'btn-primary' }
             });
             return;
         }
@@ -555,13 +526,11 @@ document.addEventListener('DOMContentLoaded', () => {
         switchView(viewStudy);
     });
 
-    // ── Navegación ────────────────────────────────────────────
     backBtn.addEventListener('click',         () => switchView(viewInput));
     startPracticeBtn.addEventListener('click', initPracticeSession);
     exitPracticeBtn.addEventListener('click',  () => switchView(viewStudy));
     retryBtn.addEventListener('click',         () => switchView(viewStudy));
 
-    // ── Sesión de práctica ────────────────────────────────────
     function initPracticeSession() {
         poolPracticeCards = [...allCards];
         practiceHistory   = [];
@@ -590,12 +559,9 @@ document.addEventListener('DOMContentLoaded', () => {
         practiceQuestion.textContent = currentCard.q;
 
         buildOptions(currentCard);
-
-        // Si el modo "Leer en voz alta" está activo, lee la pregunta automáticamente
         VoiceA11y.autoSpeak(currentCard.q, document.getElementById('listen-question-btn'));
     }
 
-    // Botón manual para escuchar la pregunta del quiz en cualquier momento
     const listenQuestionBtn = document.getElementById('listen-question-btn');
     if (listenQuestionBtn) {
         listenQuestionBtn.addEventListener('click', () => {
@@ -606,7 +572,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function buildOptions(card) {
         const distractors = [...new Set(allCards.map(c => c.a).filter(a => a !== card.a))];
         distractors.sort(() => 0.5 - Math.random());
-
         const options = [...distractors.slice(0, 3), card.a].sort(() => 0.5 - Math.random());
 
         options.forEach(text => {
@@ -676,7 +641,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     nextBtn.addEventListener('click', loadNextCard);
 
-    // ── Resultados ────────────────────────────────────────────
     function showResults() {
         switchView(viewResults);
 
@@ -713,7 +677,7 @@ document.addEventListener('DOMContentLoaded', () => {
             historyList.appendChild(el);
         });
 
-        const summaryText = `Terminaste el quiz con ${pct} por ciento de aciertos. ${stats.correct} correctas, ${stats.wrong} incorrectas y ${stats.skipped} saltadas.`;
+        const summaryText = `Terminaste el quiz con ${pct} por ciento de aciertos.`;
         const listenResultsBtn = document.getElementById('listen-results-btn');
         if (listenResultsBtn) {
             listenResultsBtn.onclick = () => VoiceA11y.speak(summaryText, listenResultsBtn);
@@ -721,36 +685,33 @@ document.addEventListener('DOMContentLoaded', () => {
         VoiceA11y.autoSpeak(summaryText, listenResultsBtn);
     }
 
-    // ── Renderizar tarjeta de estudio ─────────────────────────
     function renderCard(q, a) {
         const wrap      = document.createElement('div');
         wrap.className  = 'card-container';
-        wrap.setAttribute('tabindex', '0'); // Enfocable con Tab
+        wrap.setAttribute('tabindex', '0'); 
 
         wrap.innerHTML  = `
             <div class="card">
                 <div class="card-face card-front">
                     ${escapeHtml(q)}
-                    <button type="button" class="card-listen-btn" aria-label="Escuchar pregunta" title="Escuchar pregunta">
+                    <button type="button" class="card-listen-btn" aria-label="Escuchar pregunta">
                         <i class="ph ph-speaker-high"></i>
                     </button>
                 </div>
                 <div class="card-face card-back">
                     ${escapeHtml(a)}
-                    <button type="button" class="card-listen-btn" aria-label="Escuchar respuesta" title="Escuchar respuesta">
+                    <button type="button" class="card-listen-btn" aria-label="Escuchar respuesta">
                         <i class="ph ph-speaker-high"></i>
                     </button>
                 </div>
             </div>
         `;
 
-        // Voltear con click (pero no si se pulsó el botón de audio)
         wrap.addEventListener('click', (e) => {
             if (e.target.closest('.card-listen-btn')) return;
             wrap.querySelector('.card').classList.toggle('is-flipped');
         });
 
-        // Voltear con teclado (Enter o Espacio)
         wrap.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -758,7 +719,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Botones de audio: leen la pregunta o la respuesta sin voltear la tarjeta
         const frontBtn = wrap.querySelector('.card-front .card-listen-btn');
         const backBtn  = wrap.querySelector('.card-back .card-listen-btn');
         frontBtn.addEventListener('click', (e) => {
@@ -773,16 +733,16 @@ document.addEventListener('DOMContentLoaded', () => {
         cardsGrid.appendChild(wrap);
     }
 
-    // Escapa HTML para insertar texto de usuario de forma segura
     function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+        const div = document.createDocumentFragment();
+        const textNode = document.createTextNode(str);
+        const container = document.createElement('div');
+        container.appendChild(textNode);
+        return container.innerHTML;
     }
 
-    // ── Cambiar vista ─────────────────────────────────────────
     function switchView(next) {
-        VoiceA11y.stop(); // evita que se solape audio de la vista anterior
+        VoiceA11y.stop(); 
         [viewInput, viewStudy, viewPractice, viewResults].forEach(v => {
             v.classList.remove('active');
             v.classList.add('hidden');
@@ -791,12 +751,9 @@ document.addEventListener('DOMContentLoaded', () => {
         next.classList.add('active');
     }
 
-   // ── Magia al regresar a la pestaña (CORREGIDO) ────────────
     document.addEventListener('visibilitychange', () => {
-        // Solo enfoca el texto si la pestaña acaba de volverse visible tras estar oculta
         if (document.visibilityState === 'visible' && viewInput.classList.contains('active')) {
             textInput.focus();
         }
     });
-
 });
