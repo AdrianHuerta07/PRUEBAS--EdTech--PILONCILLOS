@@ -1593,3 +1593,106 @@ div:where(.swal2-container) .swal2-confirm.swal2-styled {
     text-transform: uppercase !important;
     letter-spacing: 0.5px !important;
 }
+/* ============================================================
+   SOBRESCRITURA: TEMA DUOLINGO DARK Y BOTONES OSCUROS
+   ============================================================ */
+
+/* 1. Fondo sólido oscuro, unificando la app con el Login */
+body {
+    background: #0b1a16 !important;
+}
+body::before {
+    display: none !important; /* Quita las luces de fondo animadas */
+}
+
+/* 2. Tarjetas estilo Duolingo: Sólidas, mate y con relieve inferior 3D */
+.content-card, .quiz-card, .voice-settings-panel, .site-header {
+    background: #112922 !important;
+    border: 2px solid #1a3d33 !important;
+    border-bottom: 6px solid #142e26 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3) !important;
+}
+/* Eliminar los brillos de "vidrio" anteriores */
+.content-card::before, .content-card::after, .quiz-card::before, .site-header::before, .voice-settings-panel::before {
+    display: none !important;
+}
+
+/* 3. Iconos brillantes (Amarillo/Oro para máximo contraste y "pop") */
+i[class^="ph"], i[class*=" ph"] {
+    color: #ffc800 !important;
+    filter: drop-shadow(0 0 6px rgba(255, 200, 0, 0.4)) !important;
+}
+/* Excepción: Dejar en paz los colores originales de los logos de IA */
+.ai-links svg, .ai-links i { filter: none !important; }
+
+/* 4. Botones Oscuros 3D (Sólidos, sin transparencias) */
+.btn-primary, .btn-accent, .btn-secondary, .login-submit-btn, .swal2-confirm.btn-primary, .btn-next {
+    background-color: #1a2b25 !important;
+    color: #ffffff !important;
+    border: 2px solid #244035 !important;
+    box-shadow: 0 5px 0 #0d1713 !important;
+    border-radius: 16px !important;
+    text-transform: uppercase !important;
+}
+.btn-primary:hover, .btn-accent:hover, .btn-secondary:hover, .login-submit-btn:hover, .btn-next:hover {
+    background-color: #244035 !important;
+}
+/* Efecto de hundimiento al presionar */
+.btn-primary:active, .btn-accent:active, .btn-secondary:active, .login-submit-btn:active, .btn-next:active {
+    box-shadow: 0 0 0 #0d1713 !important;
+    transform: translateY(5px) !important;
+}
+
+/* 5. Cajas interiores planas (Caja IA, Inputs, Textarea, Acordeón) */
+.ai-box, .instruction-block, .format-pill, .prompt-row, textarea, .accordion-btn, .history-item {
+    background: #0d1c18 !important;
+    border: 2px solid #1a3d33 !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+    color: #fff !important;
+}
+textarea:focus { border-color: #ffc800 !important; }
+
+/* 6. Flashcards para estudiar (Diseño flat 3D) */
+.card-face {
+    background: #112922 !important;
+    border: 2px solid #1a3d33 !important;
+    border-bottom: 6px solid #142e26 !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+.card-face::before { display: none !important; }
+
+/* Parte trasera de la tarjeta al voltear */
+.card-back {
+    background: #1a3d33 !important;
+    border-color: #ffc800 !important;
+    color: #ffc800 !important;
+}
+
+/* 7. Pequeños botones iconográficos (Dictado, escuchar, menú, etc.) */
+.dictate-btn, .listen-btn, .menu-toggle, .logout-btn, .copy-btn {
+    background: #112922 !important;
+    border: 2px solid #1a3d33 !important;
+    border-bottom: 4px solid #142e26 !important;
+    backdrop-filter: none !important;
+}
+.dictate-btn:active, .listen-btn:active, .menu-toggle:active, .logout-btn:active, .copy-btn:active {
+    border-bottom: 0px solid #142e26 !important;
+    transform: translateY(4px) !important;
+}
+
+/* 8. Fix para las opciones del Quiz */
+.mc-option {
+    background: #112922 !important;
+    border: 2px solid #1a3d33 !important;
+    border-bottom: 4px solid #142e26 !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+.mc-option:active:not(:disabled) {
+    transform: translateY(4px) !important;
+    border-bottom-width: 0 !important;
+}
