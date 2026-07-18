@@ -66,164 +66,164 @@ const restartBtn   = document.getElementById('restart-btn');
 // 3. MÓDULO DE ACCESIBILIDAD POR VOZ (Tu Web Speech API Original)
 // ==========================================================================
 const VoiceA11y = (() => {
-    const synth = window.speechSynthesis || null;[cite: 3]
-    let voices = [];[cite: 3]
-    let selectedVoiceURI = null;[cite: 3]
-    let rate = 0.95;[cite: 3]
-    let masterEnabled = false;[cite: 3]
-    let currentSpeakingEl = null;[cite: 3]
-    let keepAliveTimer = null;[cite: 3]
-    let voicesReadyResolvers = [];[cite: 3]
+    const synth = window.speechSynthesis || null;
+    let voices = [];
+    let selectedVoiceURI = null;
+    let rate = 0.95;
+    let masterEnabled = false;
+    let currentSpeakingEl = null;
+    let keepAliveTimer = null;
+    let voicesReadyResolvers = [];
 
     function loadVoices() {
-        if (!synth) return;[cite: 3]
-        voices = synth.getVoices().filter(v => v.lang.startsWith('es') || v.lang.startsWith('en'));[cite: 3]
-        if (voices.length === 0) voices = synth.getVoices();[cite: 3]
+        if (!synth) return;
+        voices = synth.getVoices().filter(v => v.lang.startsWith('es') || v.lang.startsWith('en'));
+        if (voices.length === 0) voices = synth.getVoices();
 
-        const select = document.getElementById('voice-select');[cite: 3]
-        if (!select) return;[cite: 3]
-        select.innerHTML = '';[cite: 3]
+        const select = document.getElementById('voice-select');
+        if (!select) return;
+        select.innerHTML = '';
         voices.forEach(v => {
-            const opt = document.createElement('option');[cite: 3]
-            opt.value = v.voiceURI;[cite: 3]
-            opt.textContent = `${v.name} (${v.lang})`;[cite: 3]
-            select.appendChild(opt);[cite: 3]
+            const opt = document.createElement('option');
+            opt.value = v.voiceURI;
+            opt.textContent = `${v.name} (${v.lang})`;
+            select.appendChild(opt);
         });
 
-        const preferred = voices.find(v => v.lang.startsWith('es'));[cite: 3]
+        const preferred = voices.find(v => v.lang.startsWith('es'));
         if (preferred && !selectedVoiceURI) {
-            selectedVoiceURI = preferred.voiceURI;[cite: 3]
-            select.value = preferred.voiceURI;[cite: 3]
+            selectedVoiceURI = preferred.voiceURI;
+            select.value = preferred.voiceURI;
         }
 
         if (voices.length > 0 && voicesReadyResolvers.length > 0) {
-            voicesReadyResolvers.forEach(r => r());[cite: 3]
-            voicesReadyResolvers = [];[cite: 3]
+            voicesReadyResolvers.forEach(r => r());
+            voicesReadyResolvers = [];
         }
     }
 
     function waitForVoices(timeoutMs = 2500) {
         return new Promise((resolve) => {
-            if (!synth) return resolve();[cite: 3]
-            if (voices.length > 0) return resolve();[cite: 3]
-            voicesReadyResolvers.push(resolve);[cite: 3]
-            setTimeout(resolve, timeoutMs);[cite: 3]
+            if (!synth) return resolve();
+            if (voices.length > 0) return resolve();
+            voicesReadyResolvers.push(resolve);
+            setTimeout(resolve, timeoutMs);
         });
     }
 
     if (synth) {
-        loadVoices();[cite: 3]
-        synth.onvoiceschanged = loadVoices;[cite: 3]
+        loadVoices();
+        synth.onvoiceschanged = loadVoices;
     }
 
     function getVoice() {
-        return voices.find(v => v.voiceURI === selectedVoiceURI) || null;[cite: 3]
+        return voices.find(v => v.voiceURI === selectedVoiceURI) || null;
     }
 
     function clearSpeakingClass() {
         if (currentSpeakingEl) {
-            currentSpeakingEl.classList.remove('speaking');[cite: 3]
-            currentSpeakingEl = null;[cite: 3]
+            currentSpeakingEl.classList.remove('speaking');
+            currentSpeakingEl = null;
         }
     }
 
     function startKeepAlive() {
-        stopKeepAlive();[cite: 3]
+        stopKeepAlive();
         keepAliveTimer = setInterval(() => {
             if (synth && synth.speaking && !synth.paused) {
-                synth.pause();[cite: 3]
-                synth.resume();[cite: 3]
+                synth.pause();
+                synth.resume();
             }
-        }, 9000);[cite: 3]
+        }, 9000);
     }
 
     function stopKeepAlive() {
         if (keepAliveTimer) {
-            clearInterval(keepAliveTimer);[cite: 3]
-            keepAliveTimer = null;[cite: 3]
+            clearInterval(keepAliveTimer);
+            keepAliveTimer = null;
         }
     }
 
     async function speak(text, el) {
-        if (!synth || !text) return;[cite: 3]
-        await waitForVoices();[cite: 3]
-        synth.cancel();[cite: 3]
-        clearSpeakingClass();[cite: 3]
-        stopKeepAlive();[cite: 3]
+        if (!synth || !text) return;
+        await waitForVoices();
+        synth.cancel();
+        clearSpeakingClass();
+        stopKeepAlive();
 
         setTimeout(() => {
-            const utter = new SpeechSynthesisUtterance(text);[cite: 3]
-            utter.rate = rate;[cite: 3]
-            utter.lang = 'es-ES';[cite: 3]
-            const v = getVoice() || voices[0] || null;[cite: 3]
-            if (v) utter.voice = v;[cite: 3]
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.rate = rate;
+            utter.lang = 'es-ES';
+            const v = getVoice() || voices[0] || null;
+            if (v) utter.voice = v;
 
             if (el) {
-                el.classList.add('speaking');[cite: 3]
-                currentSpeakingEl = el;[cite: 3]
+                el.classList.add('speaking');
+                currentSpeakingEl = el;
             }
-            updateMasterUI(true);[cite: 3]
+            updateMasterUI(true);
 
-            utter.onstart = () => startKeepAlive();[cite: 3]
+            utter.onstart = () => startKeepAlive();
             utter.onend = () => {
-                stopKeepAlive();[cite: 3]
-                clearSpeakingClass();[cite: 3]
-                updateMasterUI(false);[cite: 3]
+                stopKeepAlive();
+                clearSpeakingClass();
+                updateMasterUI(false);
             };
             utter.onerror = (e) => {
-                if (e.error === 'interrupted' || e.error === 'canceled') return;[cite: 3]
-                stopKeepAlive();[cite: 3]
-                clearSpeakingClass();[cite: 3]
-                updateMasterUI(false);[cite: 3]
+                if (e.error === 'interrupted' || e.error === 'canceled') return;
+                stopKeepAlive();
+                clearSpeakingClass();
+                updateMasterUI(false);
             };
-            synth.speak(utter);[cite: 3]
+            synth.speak(utter);
         }, 60);
     }
 
     function stop() {
-        stopKeepAlive();[cite: 3]
-        if (synth) synth.cancel();[cite: 3]
-        clearSpeakingClass();[cite: 3]
-        updateMasterUI(false);[cite: 3]
+        stopKeepAlive();
+        if (synth) synth.cancel();
+        clearSpeakingClass();
+        updateMasterUI(false);
     }
 
     function updateMasterUI(isSpeaking) {
         const masterBtn = document.getElementById('voice-master-btn');
-        if (masterBtn) masterBtn.classList.toggle('speaking', isSpeaking);[cite: 3]
+        if (masterBtn) masterBtn.classList.toggle('speaking', isSpeaking);
     }
 
-    const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition || null;[cite: 3]
+    const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition || null;
 
     return {
         speak, stop, 
-        autoSpeak: (text, el) => { if (masterEnabled) speak(text, el); },[cite: 3]
-        setMasterEnabled: (val) => { masterEnabled = val; },[cite: 3]
-        isMasterEnabled: () => masterEnabled,[cite: 3]
-        isSupported: () => !!synth,[cite: 3]
-        recognitionSupported: () => !!SpeechRecognitionCtor,[cite: 3]
-        setRate: (r) => { rate = r; },[cite: 3]
-        setVoiceURI: (uri) => { selectedVoiceURI = uri; },[cite: 3]
+        autoSpeak: (text, el) => { if (masterEnabled) speak(text, el); },
+        setMasterEnabled: (val) => { masterEnabled = val; },
+        isMasterEnabled: () => masterEnabled,
+        isSupported: () => !!synth,
+        recognitionSupported: () => !!SpeechRecognitionCtor,
+        setRate: (r) => { rate = r; },
+        setVoiceURI: (uri) => { selectedVoiceURI = uri; },
         createRecognizer: (onResult, onEnd, onError) => {
-            if (!SpeechRecognitionCtor) return null;[cite: 3]
-            const rec = new SpeechRecognitionCtor();[cite: 3]
-            rec.lang = 'es-ES';[cite: 3]
-            rec.continuous = true;[cite: 3]
-            rec.interimResults = false;[cite: 3]
+            if (!SpeechRecognitionCtor) return null;
+            const rec = new SpeechRecognitionCtor();
+            rec.lang = 'es-ES';
+            rec.continuous = true;
+            rec.interimResults = false;
             rec.onresult = (e) => {
-                let finalText = '';[cite: 3]
+                let finalText = '';
                 for (let i = e.resultIndex; i < e.results.length; i++) {
-                    if (e.results[i].isFinal) finalText += e.results[i][0].transcript;[cite: 3]
+                    if (e.results[i].isFinal) finalText += e.results[i][0].transcript;
                 }
-                if (finalText) onResult(finalText.trim());[cite: 3]
+                if (finalText) onResult(finalText.trim());
             };
-            rec.onend = () => { if (onEnd) onEnd(); };[cite: 3]
+            rec.onend = () => { if (onEnd) onEnd(); };
             rec.onerror = (e) => {
-                let reason = 'unknown';[cite: 3]
-                if (e.error === 'not-allowed' || e.error === 'permission-denied') reason = 'permission';[cite: 3]
-                else if (e.error === 'no-speech') reason = 'no-speech';[cite: 3]
-                else if (e.error === 'network') reason = 'network';[cite: 3]
-                else if (e.error === 'audio-capture') reason = 'no-mic';[cite: 3]
-                if (onError) onError(e, reason);[cite: 3]
+                let reason = 'unknown';
+                if (e.error === 'not-allowed' || e.error === 'permission-denied') reason = 'permission';
+                else if (e.error === 'no-speech') reason = 'no-speech';
+                else if (e.error === 'network') reason = 'network';
+                else if (e.error === 'audio-capture') reason = 'no-mic';
+                if (onError) onError(e, reason);
             };
             return rec;
         }
@@ -277,7 +277,7 @@ const VoiceA11y = (() => {
     if (!dictateBtn || !dataInput) return;
 
     if (!VoiceA11y.recognitionSupported() || !window.isSecureContext) {
-        dictateBtn.classList.add('unsupported');[cite: 3]
+        dictateBtn.classList.add('unsupported');
         return;
     }
 
@@ -286,7 +286,7 @@ const VoiceA11y = (() => {
 
     dictateBtn.addEventListener('click', () => {
         if (isRecording) {
-            recognizer && recognizer.stop();[cite: 3]
+            if (recognizer) recognizer.stop();
             return;
         }
 
@@ -297,18 +297,18 @@ const VoiceA11y = (() => {
             },
             () => {
                 isRecording = false;
-                dictateBtn.classList.remove('recording');[cite: 3]
+                dictateBtn.classList.remove('recording');
             },
             () => {
                 isRecording = false;
-                dictateBtn.classList.remove('recording');[cite: 3]
+                dictateBtn.classList.remove('recording');
             }
         );
 
         if (!recognizer) return;
         isRecording = true;
-        dictateBtn.classList.add('recording');[cite: 3]
-        recognizer.start();[cite: 3]
+        dictateBtn.classList.add('recording');
+        recognizer.start();
     });
 })();
 
@@ -361,7 +361,6 @@ loadCardsBtn.addEventListener('click', () => {
         renderFlashcards();
         switchView(studyView);
     } catch (e) {
-        // Alerta SweetAlert personalizada con tus estilos Piloncillos
         Swal.fire({
             icon: 'error',
             title: 'Formato Incorrecto',
@@ -379,8 +378,8 @@ function renderFlashcards() {
 
     allCards.forEach(item => {
         const wrap = document.createElement('div');
-        wrap.className = 'card-container';[cite: 2, 3]
-        wrap.setAttribute('tabindex', '0');[cite: 3]
+        wrap.className = 'card-container';
+        wrap.setAttribute('tabindex', '0');
 
         wrap.innerHTML = `
             <div class="card">
@@ -399,32 +398,29 @@ function renderFlashcards() {
             </div>
         `;
 
-        // Tu lógica exacta de giro 3D en click[cite: 3]
         wrap.addEventListener('click', (e) => {
-            if (e.target.closest('.card-listen-btn')) return;[cite: 3]
-            wrap.querySelector('.card').classList.toggle('is-flipped');[cite: 2, 3]
+            if (e.target.closest('.card-listen-btn')) return;
+            wrap.querySelector('.card').classList.toggle('is-flipped');
         });
 
-        // Tu lógica exacta de teclado para accesibilidad[cite: 3]
         wrap.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();[cite: 3]
-                wrap.querySelector('.card').classList.toggle('is-flipped');[cite: 3]
+                e.preventDefault();
+                wrap.querySelector('.card').classList.toggle('is-flipped');
             }
         });
 
-        // Lectores independientes por cada cara
         wrap.querySelector('.card-face:not(.card-back) .card-listen-btn').addEventListener('click', (e) => {
-            e.stopPropagation();[cite: 3]
+            e.stopPropagation();
             VoiceA11y.speak(item.q, e.currentTarget);
         });
 
         wrap.querySelector('.card-back .card-listen-btn').addEventListener('click', (e) => {
-            e.stopPropagation();[cite: 3]
+            e.stopPropagation();
             VoiceA11y.speak(item.a, e.currentTarget);
         });
 
-        cardsGrid.appendChild(wrap);[cite: 3]
+        cardsGrid.appendChild(wrap);
     });
 }
 
@@ -433,9 +429,9 @@ function renderFlashcards() {
 // ==========================================================================
 goQuizBtn.addEventListener('click', () => {
     if (allCards.length === 0) return alert("Carga tarjetas primero.");
-    poolPracticeCards = [...allCards];[cite: 3]
-    practiceHistory = [];[cite: 3]
-    stats = { correct: 0, wrong: 0, skipped: 0 };[cite: 3]
+    poolPracticeCards = [...allCards];
+    practiceHistory = [];
+    stats = { correct: 0, wrong: 0, skipped: 0 };
     quizIndex = 0;
     switchView(quizView);
     loadNextQuizCard();
@@ -447,136 +443,135 @@ function loadNextQuizCard() {
         return;
     }
 
-    mcGrid.innerHTML = '';[cite: 3]
-    quizFeedback.textContent = '';[cite: 3]
-    quizFeedback.className = 'feedback';[cite: 3]
-    quizSkipBtn.classList.remove('hidden');[cite: 3]
-    quizNextBtn.classList.add('hidden');[cite: 3]
+    mcGrid.innerHTML = '';
+    quizFeedback.textContent = '';
+    quizFeedback.className = 'feedback';
+    quizSkipBtn.classList.remove('hidden');
+    quizNextBtn.classList.add('hidden');
 
     quizIndex++;
-    quizProgress.textContent = `Pregunta ${quizIndex} de ${allCards.length}`;[cite: 3]
+    quizProgress.textContent = `Pregunta ${quizIndex} de ${allCards.length}`;
 
-    const rnd = Math.floor(Math.random() * poolPracticeCards.length);[cite: 3]
-    currentCard = poolPracticeCards.splice(rnd, 1)[0];[cite: 3]
-    practiceQuestion.textContent = currentCard.q;[cite: 3]
+    const rnd = Math.floor(Math.random() * poolPracticeCards.length);
+    currentCard = poolPracticeCards.splice(rnd, 1)[0];
+    practiceQuestion.textContent = currentCard.q;
 
-    // Construcción de distractores dinámicos
-    const distractors = [...new Set(allCards.map(c => c.a).filter(a => a !== currentCard.a))];[cite: 3]
-    distractors.sort(() => 0.5 - Math.random());[cite: 3]
-    const options = [...distractors.slice(0, 3), currentCard.a].sort(() => 0.5 - Math.random());[cite: 3]
+    const distractors = [...new Set(allCards.map(c => c.a).filter(a => a !== currentCard.a))];
+    distractors.sort(() => 0.5 - Math.random());
+    const options = [...distractors.slice(0, 3), currentCard.a].sort(() => 0.5 - Math.random());
 
     options.forEach(text => {
         const btn = document.createElement('button');
         btn.className = 'mc-option';
         btn.textContent = text;
         btn.onclick = () => gradeQuizAnswer(text, btn);
-        mcGrid.appendChild(btn);[cite: 3]
+        mcGrid.appendChild(btn);
     });
 
-    VoiceA11y.autoSpeak(currentCard.q, document.getElementById('quiz-listen-btn'));[cite: 3]
+    VoiceA11y.autoSpeak(currentCard.q, document.getElementById('quiz-listen-btn'));
 }
 
 document.getElementById('quiz-listen-btn').addEventListener('click', (e) => {
-    if (currentCard) VoiceA11y.speak(currentCard.q, e.currentTarget);[cite: 3]
+    if (currentCard) VoiceA11y.speak(currentCard.q, e.currentTarget);
 });
 
 function gradeQuizAnswer(selected, clickedBtn) {
     const allBtns = mcGrid.querySelectorAll('.mc-option');
-    allBtns.forEach(b => b.disabled = true);[cite: 3]
+    allBtns.forEach(b => b.disabled = true);
 
-    quizSkipBtn.classList.add('hidden');[cite: 3]
-    quizNextBtn.classList.remove('hidden');[cite: 3]
+    quizSkipBtn.classList.add('hidden');
+    quizNextBtn.classList.remove('hidden');
 
-    const isCorrect = selected === currentCard.a;[cite: 3]
+    const isCorrect = selected === currentCard.a;
 
     if (isCorrect) {
-        stats.correct++;[cite: 3]
-        clickedBtn.classList.add('correct');[cite: 3]
-        quizFeedback.textContent = '¡Excelente! Respuesta correcta.';[cite: 3]
-        quizFeedback.className = 'feedback correct';[cite: 3]
-        VoiceA11y.autoSpeak(`Correcto. La respuesta es ${currentCard.a}.`);[cite: 3]
+        stats.correct++;
+        clickedBtn.classList.add('correct');
+        quizFeedback.textContent = '¡Excelente! Respuesta correcta.';
+        quizFeedback.className = 'feedback correct';
+        VoiceA11y.autoSpeak(`Correcto. La respuesta es ${currentCard.a}.`);
     } else {
-        stats.wrong++;[cite: 3]
-        clickedBtn.classList.add('wrong');[cite: 3]
+        stats.wrong++;
+        clickedBtn.classList.add('wrong');
         allBtns.forEach(b => {
-            if (b.textContent === currentCard.a) b.classList.add('correct');[cite: 3]
+            if (b.textContent === currentCard.a) b.classList.add('correct');
         });
-        quizFeedback.textContent = 'Incorrecto. Mira cuál era la respuesta.';[cite: 3]
-        quizFeedback.className = 'feedback wrong';[cite: 3]
-        VoiceA11y.autoSpeak(`Incorrecto. La respuesta correcta era ${currentCard.a}.`);[cite: 3]
+        quizFeedback.textContent = 'Incorrecto. Mira cuál era la respuesta.';
+        quizFeedback.className = 'feedback wrong';
+        VoiceA11y.autoSpeak(`Incorrecto. La respuesta correcta era ${currentCard.a}.`);
     }
 
-    practiceHistory.push({[cite: 3]
-        question: currentCard.q,[cite: 3]
-        userAnswer: selected,[cite: 3]
-        correctAnswer: currentCard.a,[cite: 3]
-        status: isCorrect ? 'correct' : 'wrong'[cite: 3]
+    practiceHistory.push({
+        question: currentCard.q,
+        userAnswer: selected,
+        correctAnswer: currentCard.a,
+        status: isCorrect ? 'correct' : 'wrong'
     });
 }
 
 quizSkipBtn.addEventListener('click', () => {
-    stats.skipped++;[cite: 3]
-    practiceHistory.push({[cite: 3]
-        question: currentCard.q,[cite: 3]
+    stats.skipped++;
+    practiceHistory.push({
+        question: currentCard.q,
         userAnswer: '[Saltada]',
-        correctAnswer: currentCard.a,[cite: 3]
-        status: 'skipped'[cite: 3]
+        correctAnswer: currentCard.a,
+        status: 'skipped'
     });
     loadNextQuizCard();
 });
 
-quizNextBtn.addEventListener('click', loadNextQuizCard);[cite: 3]
+quizNextBtn.addEventListener('click', loadNextQuizCard);
 
 // ==========================================================================
 // 8. VISTA DE RESULTADOS
 // ==========================================================================
 function showResults() {
-    switchView(resultsView);[cite: 3]
+    switchView(resultsView);
 
-    const total = allCards.length;[cite: 3]
-    const pct = total > 0 ? Math.round((stats.correct / total) * 100) : 0;[cite: 3]
+    const total = allCards.length;
+    const pct = total > 0 ? Math.round((stats.correct / total) * 100) : 0;
 
-    scorePercent.textContent = `${pct}%`;[cite: 3]
-    statCorrect.textContent = stats.correct;[cite: 3]
-    statWrong.textContent = stats.wrong;[cite: 3]
-    statSkipped.textContent = stats.skipped;[cite: 3]
+    scorePercent.textContent = `${pct}%`;
+    statCorrect.textContent = stats.correct;
+    statWrong.textContent = stats.wrong;
+    statSkipped.textContent = stats.skipped;
 
-    const circumference = 251.2;[cite: 3]
+    const circumference = 251.2;
     if (ringFill) {
         setTimeout(() => {
-            ringFill.style.strokeDashoffset = circumference - (pct / 100) * circumference;[cite: 3]
-        }, 120);[cite: 3]
+            ringFill.style.strokeDashoffset = circumference - (pct / 100) * circumference;
+        }, 120);
     }
 
-    historyList.innerHTML = '';[cite: 3]
+    historyList.innerHTML = '';
     const labels = { correct: 'Correcto', wrong: 'Incorrecto', skipped: 'Saltada' };
 
     practiceHistory.forEach(item => {
         const el = document.createElement('div');
-        el.className = `history-item item-${item.status}`;[cite: 3]
+        el.className = `history-item item-${item.status}`;
         el.innerHTML = `
             <span class="status-tag ${item.status}">${labels[item.status]}</span>
             <p>${escapeHtml(item.question)}</p>
             <span>Tu respuesta: <strong>${escapeHtml(item.userAnswer)}</strong></span>
             ${item.status !== 'correct' ? `<span>Correcta: <strong>${escapeHtml(item.correctAnswer)}</strong></span>` : ''}
         `;
-        historyList.appendChild(el);[cite: 3]
+        historyList.appendChild(el);
     });
 
-    const summaryText = `Terminaste el quiz con ${pct} por ciento de aciertos.`;[cite: 3]
-    VoiceA11y.autoSpeak(summaryText);[cite: 3]
+    const summaryText = `Terminaste el quiz con ${pct} por ciento de aciertos.`;
+    VoiceA11y.autoSpeak(summaryText);
 }
 
 restartBtn.addEventListener('click', () => {
-    switchView(studyView);[cite: 3]
-    renderFlashcards();[cite: 3]
+    switchView(studyView);
+    renderFlashcards();
 });
 
 // ==========================================================================
 // 9. FUNCIONES DE SOPORTE E INTERFAZ
 // ==========================================================================
 function switchView(next) {
-    VoiceA11y.stop();[cite: 3]
+    VoiceA11y.stop();
     [studyView, quizView, resultsView].forEach(v => {
         v.classList.remove('active');
         v.classList.add('hidden');
@@ -586,8 +581,8 @@ function switchView(next) {
 }
 
 function resetApp() {
-    allCards = [];[cite: 3]
-    cardsGrid.innerHTML = '';[cite: 3]
+    allCards = [];
+    cardsGrid.innerHTML = '';
     dataInput.value = '';
     [studyView, quizView, resultsView].forEach(v => {
         v.classList.remove('active');
@@ -596,9 +591,9 @@ function resetApp() {
 }
 
 function escapeHtml(str) {
-    const div = document.createElement('div');[cite: 3]
-    div.textContent = str;[cite: 3]
-    return div.innerHTML;[cite: 3]
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
 }
 
 // Acordeón de la guía de uso
