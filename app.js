@@ -1,209 +1,247 @@
-// ==========================================================================
-// 1. CONFIGURACIÓN E IMPORTACIÓN DE FIREBASE (Módulos Web Oficiales)
-// ==========================================================================
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-    getAuth, 
-    signInWithPopup, 
-    GoogleAuthProvider, 
-    signOut, 
-    onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+document.addEventListener('DOMContentLoaded', () => {
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDUDb2K_2NjX7sW5xfi51wtOSHKg_oI6Rw",
-  authDomain: "flashcards-81501.firebaseapp.com",
-  projectId: "flashcards-81501",
-  storageBucket: "flashcards-81501.firebasestorage.app",
-  messagingSenderId: "327444607564",
-  appId: "1:327444607564:web:c9c55dbe994d69a4b03ae9",
-  measurementId: "G-N0ZTSLN8NQ"
-};
+    // ══════════════════════════════════════════════════════════
+    // MÓDULO DE LOGIN
+    // Credenciales fijas de acceso. Se valida localmente y se
+    // recuerda la sesión en localStorage para no pedir login
+    // en cada visita (útil en modo offline / app instalada).
+    // ══════════════════════════════════════════════════════════
+    (function setupLogin() {
+        const VALID_EMAIL    = 'TCDS@gmail.com';
+        const VALID_PASSWORD = 'DGR';
+        const SESSION_KEY     = 'piloncillos_flashcards_session';
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
+        const loginScreen  = document.getElementById('login-screen');
+        const appContent   = document.getElementById('app-content');
+        const loginForm    = document.getElementById('login-form');
+        const emailInput   = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        const loginError   = document.getElementById('login-error');
+        const togglePwdBtn  = document.getElementById('toggle-password');
+        const logoutBtn     = document.getElementById('logout-btn');
 
-// ==========================================================================
-// 2. REFERENCIAS AL DOM
-// ==========================================================================
-const loginScreen  = document.getElementById('login-screen');
-const googleLoginBtn = document.getElementById('google-login-btn');
-const loginError   = document.getElementById('login-error');
-const errorText    = document.getElementById('error-text');
-const logoutBtn    = document.getElementById('logout-btn');
-
-// Vistas
-const studyView    = document.getElementById('study-view');
-const quizView     = document.getElementById('quiz-view');
-const resultsView  = document.getElementById('results-view');
-
-// Inputs y Generación
-const dataInput    = document.getElementById('data-input');
-const loadCardsBtn = document.getElementById('load-cards-btn');
-const cardsGrid    = document.getElementById('cards-grid');
-const cardCounter  = document.getElementById('card-counter');
-
-// Quiz / Práctica
-const goQuizBtn        = document.getElementById('go-quiz-btn');
-const practiceQuestion = document.getElementById('practice-question');
-const mcGrid           = document.getElementById('mc-grid');
-const quizFeedback     = document.getElementById('quiz-feedback');
-const quizProgress     = document.getElementById('quiz-progress');
-const quizNextBtn      = document.getElementById('quiz-next-btn');
-const quizSkipBtn      = document.getElementById('quiz-skip-btn');
-
-// Resultados
-const scorePercent = document.getElementById('score-percent');
-const ringFill     = document.getElementById('ring-fill');
-const statCorrect  = document.getElementById('stat-correct');
-const statWrong    = document.getElementById('stat-wrong');
-const statSkipped  = document.getElementById('stat-skipped');
-const historyList  = document.getElementById('history-list');
-const restartBtn   = document.getElementById('restart-btn');
-
-// ==========================================================================
-// 3. MÓDULO DE ACCESIBILIDAD POR VOZ (Tu Web Speech API Original)
-// ==========================================================================
-const VoiceA11y = (() => {
-    const synth = window.speechSynthesis || null;
-    let voices = [];
-    let selectedVoiceURI = null;
-    let rate = 0.95;
-    let masterEnabled = false;
-    let currentSpeakingEl = null;
-    let keepAliveTimer = null;
-    let voicesReadyResolvers = [];
-
-    function loadVoices() {
-        if (!synth) return;
-        voices = synth.getVoices().filter(v => v.lang.startsWith('es') || v.lang.startsWith('en'));
-        if (voices.length === 0) voices = synth.getVoices();
-
-        const select = document.getElementById('voice-select');
-        if (!select) return;
-        select.innerHTML = '';
-        voices.forEach(v => {
-            const opt = document.createElement('option');
-            opt.value = v.voiceURI;
-            opt.textContent = `${v.name} (${v.lang})`;
-            select.appendChild(opt);
-        });
-
-        const preferred = voices.find(v => v.lang.startsWith('es'));
-        if (preferred && !selectedVoiceURI) {
-            selectedVoiceURI = preferred.voiceURI;
-            select.value = preferred.voiceURI;
+        function showApp() {
+            loginScreen.classList.add('hidden');
+            appContent.classList.remove('hidden');
         }
 
-        if (voices.length > 0 && voicesReadyResolvers.length > 0) {
-            voicesReadyResolvers.forEach(r => r());
-            voicesReadyResolvers = [];
+        function showLogin() {
+            appContent.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            emailInput.value = '';
+            passwordInput.value = '';
+            loginError.classList.add('hidden');
+            emailInput.focus();
         }
-    }
 
-    function waitForVoices(timeoutMs = 2500) {
-        return new Promise((resolve) => {
-            if (!synth) return resolve();
-            if (voices.length > 0) return resolve();
-            voicesReadyResolvers.push(resolve);
-            setTimeout(resolve, timeoutMs);
-        });
-    }
-
-    if (synth) {
-        loadVoices();
-        synth.onvoiceschanged = loadVoices;
-    }
-
-    function getVoice() {
-        return voices.find(v => v.voiceURI === selectedVoiceURI) || null;
-    }
-
-    function clearSpeakingClass() {
-        if (currentSpeakingEl) {
-            currentSpeakingEl.classList.remove('speaking');
-            currentSpeakingEl = null;
+        // Si ya había sesión guardada (por ejemplo, app instalada sin internet), entra directo
+        if (localStorage.getItem(SESSION_KEY) === 'true') {
+            showApp();
+        } else {
+            showLogin();
         }
-    }
 
-    function startKeepAlive() {
-        stopKeepAlive();
-        keepAliveTimer = setInterval(() => {
-            if (synth && synth.speaking && !synth.paused) {
-                synth.pause();
-                synth.resume();
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email    = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                if (email.toLowerCase() === VALID_EMAIL.toLowerCase() && password === VALID_PASSWORD) {
+                    localStorage.setItem(SESSION_KEY, 'true');
+                    loginError.classList.add('hidden');
+                    showApp();
+                } else {
+                    loginError.classList.remove('hidden');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            });
+        }
+
+        if (togglePwdBtn) {
+            togglePwdBtn.addEventListener('click', () => {
+                const isPwd = passwordInput.type === 'password';
+                passwordInput.type = isPwd ? 'text' : 'password';
+                togglePwdBtn.innerHTML = isPwd
+                    ? '<i class="ph ph-eye-slash"></i>'
+                    : '<i class="ph ph-eye"></i>';
+            });
+        }
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem(SESSION_KEY);
+                showLogin();
+            });
+        }
+    })();
+
+    // ══════════════════════════════════════════════════════════
+    // MÓDULO DE ACCESIBILIDAD POR VOZ (Web Speech API)
+    // Texto→Voz (TTS) para leer contenido, y Voz→Texto (STT)
+    // para dictar tarjetas. Pensado para personas con dificultad
+    // para leer o que prefieren usar la app hablando.
+    // ══════════════════════════════════════════════════════════
+    const VoiceA11y = (() => {
+        const synth = window.speechSynthesis || null;
+        let voices = [];
+        let selectedVoiceURI = null;
+        let rate = 0.95;
+        let masterEnabled = false; // "Leer en voz alta" global activado
+        let currentSpeakingEl = null;
+        let keepAliveTimer = null;  // Fix bug Chromium/Brave: evita que synth se congele
+        let voicesReadyResolvers = [];
+
+        const announcer = document.getElementById('aria-announcer');
+
+        function announce(msg) {
+            if (announcer) announcer.textContent = msg;
+        }
+
+        function loadVoices() {
+            if (!synth) return;
+            voices = synth.getVoices().filter(v => v.lang.startsWith('es') || v.lang.startsWith('en'));
+            if (voices.length === 0) voices = synth.getVoices();
+
+            const select = document.getElementById('voice-select');
+            if (!select) return;
+            select.innerHTML = '';
+            voices.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.voiceURI;
+                opt.textContent = `${v.name} (${v.lang})`;
+                select.appendChild(opt);
+            });
+
+            const preferred = voices.find(v => v.lang.startsWith('es'));
+            if (preferred && !selectedVoiceURI) {
+                selectedVoiceURI = preferred.voiceURI;
+                select.value = preferred.voiceURI;
             }
-        }, 9000);
-    }
 
-    function stopKeepAlive() {
-        if (keepAliveTimer) {
-            clearInterval(keepAliveTimer);
-            keepAliveTimer = null;
-        }
-    }
-
-    async function speak(text, el) {
-        if (!synth || !text) return;
-        await waitForVoices();
-        synth.cancel();
-        clearSpeakingClass();
-        stopKeepAlive();
-
-        setTimeout(() => {
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.rate = rate;
-            utter.lang = 'es-ES';
-            const v = getVoice() || voices[0] || null;
-            if (v) utter.voice = v;
-
-            if (el) {
-                el.classList.add('speaking');
-                currentSpeakingEl = el;
+            if (voices.length > 0 && voicesReadyResolvers.length > 0) {
+                voicesReadyResolvers.forEach(r => r());
+                voicesReadyResolvers = [];
             }
-            updateMasterUI(true);
+        }
 
-            utter.onstart = () => startKeepAlive();
-            utter.onend = () => {
-                stopKeepAlive();
-                clearSpeakingClass();
-                updateMasterUI(false);
-            };
-            utter.onerror = (e) => {
-                if (e.error === 'interrupted' || e.error === 'canceled') return;
-                stopKeepAlive();
-                clearSpeakingClass();
-                updateMasterUI(false);
-            };
-            synth.speak(utter);
-        }, 60);
-    }
+        // Devuelve una promesa que resuelve cuando hay voces disponibles
+        // (fix Brave/Chrome: getVoices() suele venir vacío al cargar la página)
+        function waitForVoices(timeoutMs = 2500) {
+            return new Promise((resolve) => {
+                if (!synth) return resolve();
+                if (voices.length > 0) return resolve();
+                voicesReadyResolvers.push(resolve);
+                // Fallback: si el evento voiceschanged nunca llega, no bloquear para siempre
+                setTimeout(resolve, timeoutMs);
+            });
+        }
 
-    function stop() {
-        stopKeepAlive();
-        if (synth) synth.cancel();
-        clearSpeakingClass();
-        updateMasterUI(false);
-    }
+        if (synth) {
+            loadVoices();
+            synth.onvoiceschanged = loadVoices;
+        }
 
-    function updateMasterUI(isSpeaking) {
-        const masterBtn = document.getElementById('voice-master-btn');
-        if (masterBtn) masterBtn.classList.toggle('speaking', isSpeaking);
-    }
+        function getVoice() {
+            return voices.find(v => v.voiceURI === selectedVoiceURI) || null;
+        }
 
-    const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+        function clearSpeakingClass() {
+            if (currentSpeakingEl) {
+                currentSpeakingEl.classList.remove('speaking');
+                currentSpeakingEl = null;
+            }
+        }
 
-    return {
-        speak, stop, 
-        autoSpeak: (text, el) => { if (masterEnabled) speak(text, el); },
-        setMasterEnabled: (val) => { masterEnabled = val; },
-        isMasterEnabled: () => masterEnabled,
-        isSupported: () => !!synth,
-        recognitionSupported: () => !!SpeechRecognitionCtor,
-        setRate: (r) => { rate = r; },
-        setVoiceURI: (uri) => { selectedVoiceURI = uri; },
-        createRecognizer: (onResult, onEnd, onError) => {
+        // ── keepAlive: fix bug de Chromium/Brave donde el synth se congela
+        // en textos largos (>15s). Hace pause/resume periódico mientras habla.
+        function startKeepAlive() {
+            stopKeepAlive();
+            keepAliveTimer = setInterval(() => {
+                if (synth && synth.speaking && !synth.paused) {
+                    synth.pause();
+                    synth.resume();
+                }
+            }, 9000);
+        }
+        function stopKeepAlive() {
+            if (keepAliveTimer) {
+                clearInterval(keepAliveTimer);
+                keepAliveTimer = null;
+            }
+        }
+
+        async function speak(text, el) {
+            if (!synth || !text) return;
+
+            // Fix Brave/Chrome: espera a que existan voces antes de intentar hablar
+            await waitForVoices();
+
+            synth.cancel();
+            clearSpeakingClass();
+            stopKeepAlive();
+
+            // Fix Brave/Chrome: un margen mínimo tras cancel() evita que el
+            // siguiente speak() se pierda o quede en un estado roto.
+            setTimeout(() => {
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.rate = rate;
+                utter.lang = 'es-ES';
+                const v = getVoice() || voices[0] || null;
+                if (v) utter.voice = v;
+
+                if (el) {
+                    el.classList.add('speaking');
+                    currentSpeakingEl = el;
+                }
+                updateMasterUI(true);
+
+                utter.onstart = () => startKeepAlive();
+
+                utter.onend = () => {
+                    stopKeepAlive();
+                    clearSpeakingClass();
+                    updateMasterUI(false);
+                };
+                utter.onerror = (e) => {
+                    // 'interrupted' y 'canceled' son normales al llamar cancel(); ignorar
+                    if (e.error === 'interrupted' || e.error === 'canceled') return;
+                    stopKeepAlive();
+                    clearSpeakingClass();
+                    updateMasterUI(false);
+                };
+
+                synth.speak(utter);
+            }, 60);
+        }
+
+        function stop() {
+            stopKeepAlive();
+            if (synth) synth.cancel();
+            clearSpeakingClass();
+            updateMasterUI(false);
+        }
+
+        function updateMasterUI(isSpeaking) {
+            const masterBtn = document.getElementById('voice-master-toggle');
+            const stopBtn   = document.getElementById('voice-stop-btn');
+            if (stopBtn) stopBtn.classList.toggle('hidden', !isSpeaking);
+            if (masterBtn) masterBtn.classList.toggle('speaking', isSpeaking);
+        }
+
+        function autoSpeak(text, el) {
+            if (masterEnabled) speak(text, el);
+        }
+
+        function setMasterEnabled(val) { masterEnabled = val; }
+        function isMasterEnabled() { return masterEnabled; }
+        function isSupported() { return !!synth; }
+
+        // ── Reconocimiento de voz (dictado) ──────────────────
+        const SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+
+        function createRecognizer(onResult, onEnd, onError) {
             if (!SpeechRecognitionCtor) return null;
             const rec = new SpeechRecognitionCtor();
             rec.lang = 'es-ES';
@@ -218,6 +256,8 @@ const VoiceA11y = (() => {
             };
             rec.onend = () => { if (onEnd) onEnd(); };
             rec.onerror = (e) => {
+                // Mensajes específicos para que el usuario sepa qué pasó
+                // (Brave bloquea el micrófono por Escudos con más frecuencia que Chrome)
                 let reason = 'unknown';
                 if (e.error === 'not-allowed' || e.error === 'permission-denied') reason = 'permission';
                 else if (e.error === 'no-speech') reason = 'no-speech';
@@ -227,182 +267,490 @@ const VoiceA11y = (() => {
             };
             return rec;
         }
-    };
-})();
 
-// ==========================================================================
-// 4. CONTROLADORES DE ENTRADAS Y PANELES DE ACCESIBILIDAD
-// ==========================================================================
-(() => {
-    const voiceMasterBtn = document.getElementById('voice-master-btn');
-    const toggleVoicePanel = document.getElementById('toggle-voice-panel');
-    const voicePanel = document.getElementById('voice-panel');
-    const rateInput = document.getElementById('voice-rate');
-    const rateVal = document.getElementById('voice-rate-val');
-    const voiceSelect = document.getElementById('voice-select');
+        function recognitionSupported() { return !!SpeechRecognitionCtor; }
 
-    if (voiceMasterBtn) {
-        voiceMasterBtn.addEventListener('click', () => {
+        return {
+            announce, speak, stop, autoSpeak,
+            setMasterEnabled, isMasterEnabled, isSupported,
+            recognitionSupported, createRecognizer,
+            setRate: (r) => { rate = r; },
+            setVoiceURI: (uri) => { selectedVoiceURI = uri; },
+        };
+    })();
+
+    // ── Configurar controles del panel de accesibilidad ───────
+    (function setupVoiceBar() {
+        const masterToggle   = document.getElementById('voice-master-toggle');
+        const stopBtn        = document.getElementById('voice-stop-btn');
+        const menuToggle      = document.getElementById('menu-toggle');
+        const settingsPanel  = document.getElementById('voice-settings-panel');
+        const rateInput      = document.getElementById('voice-rate');
+        const rateVal        = document.getElementById('voice-rate-val');
+        const voiceSelect    = document.getElementById('voice-select');
+
+        if (!VoiceA11y.isSupported() && masterToggle) {
+            masterToggle.disabled = true;
+            masterToggle.title = 'Tu navegador no soporta lectura en voz alta';
+            masterToggle.style.opacity = '0.4';
+        }
+
+        masterToggle && masterToggle.addEventListener('click', () => {
             const next = !VoiceA11y.isMasterEnabled();
             VoiceA11y.setMasterEnabled(next);
-            voiceMasterBtn.innerHTML = next ? '<i class="fas fa-pause"></i> Desactivar Voz' : '<i class="fas fa-play"></i> Probar Voz';
-            if (!next) VoiceA11y.stop();
-        });
-    }
+            masterToggle.setAttribute('aria-pressed', String(next));
+            const label = masterToggle.querySelector('.voice-btn-label');
+            if (label) label.textContent = next ? 'Voz activada — toca para desactivar' : 'Activar lectura en voz alta';
 
-    if (toggleVoicePanel) {
-        toggleVoicePanel.addEventListener('click', () => {
-            voicePanel.classList.toggle('hidden');
+            if (next) {
+                VoiceA11y.announce('Lectura en voz alta activada.');
+                const activeView = document.querySelector('.view.active');
+                if (activeView && activeView.id === 'view-practice') {
+                    const q = document.getElementById('practice-question');
+                    if (q) VoiceA11y.speak(q.textContent, document.getElementById('listen-question-btn'));
+                }
+            } else {
+                VoiceA11y.stop();
+            }
         });
-    }
 
-    if (rateInput) {
-        rateInput.addEventListener('input', () => {
+        stopBtn && stopBtn.addEventListener('click', () => VoiceA11y.stop());
+
+        menuToggle && menuToggle.addEventListener('click', () => {
+            const isOpen = !settingsPanel.classList.contains('hidden');
+            settingsPanel.classList.toggle('hidden', isOpen);
+            menuToggle.setAttribute('aria-expanded', String(!isOpen));
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!settingsPanel || settingsPanel.classList.contains('hidden')) return;
+            const header = document.querySelector('.site-header');
+            if (header && !header.contains(e.target) && !settingsPanel.contains(e.target)) {
+                settingsPanel.classList.add('hidden');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        rateInput && rateInput.addEventListener('input', () => {
             const r = parseFloat(rateInput.value);
             VoiceA11y.setRate(r);
-            rateVal.textContent = `${r.toFixed(1)}x`;
+            rateVal.textContent = `${r.toFixed(2)}×`;
         });
-    }
 
-    if (voiceSelect) {
-        voiceSelect.addEventListener('change', () => {
+        voiceSelect && voiceSelect.addEventListener('change', () => {
             VoiceA11y.setVoiceURI(voiceSelect.value);
         });
-    }
-})();
+    })();
 
-// Dictado por voz
-(() => {
-    const dictateBtn = document.getElementById('dictate-btn');
-    if (!dictateBtn || !dataInput) return;
+    // ── Dictado por voz en el textarea de entrada ─────────────
+    (function setupDictation() {
+        const dictateBtn    = document.getElementById('dictate-btn');
+        const dictateStatus = document.getElementById('dictate-status');
+        const textInputEl   = document.getElementById('text-input');
+        if (!dictateBtn || !textInputEl) return;
 
-    if (!VoiceA11y.recognitionSupported() || !window.isSecureContext) {
-        dictateBtn.classList.add('unsupported');
-        return;
-    }
-
-    let recognizer = null;
-    let isRecording = false;
-
-    dictateBtn.addEventListener('click', () => {
-        if (isRecording) {
-            if (recognizer) recognizer.stop();
+        if (!VoiceA11y.recognitionSupported()) {
+            dictateBtn.classList.add('unsupported');
+            dictateBtn.title = 'Dictado por voz no disponible en este navegador (prueba Chrome o Brave)';
             return;
         }
 
-        recognizer = VoiceA11y.createRecognizer(
-            (text) => {
-                const current = dataInput.value;
-                dataInput.value = current ? `${current} ${text}` : text;
-            },
-            () => {
-                isRecording = false;
-                dictateBtn.classList.remove('recording');
-            },
-            () => {
-                isRecording = false;
-                dictateBtn.classList.remove('recording');
+        // El micrófono solo funciona en contextos seguros: https:// o localhost
+        const isSecure = window.isSecureContext;
+        if (!isSecure) {
+            dictateBtn.classList.add('unsupported');
+            dictateBtn.title = 'El dictado requiere HTTPS o localhost. Sirve la página con un servidor local o publícala en HTTPS.';
+            return;
+        }
+
+        let recognizer = null;
+        let isRecording = false;
+
+        function setStatus(msg) {
+            if (!dictateStatus) return;
+            if (msg) {
+                dictateStatus.textContent = msg;
+                dictateStatus.classList.remove('hidden');
+            } else {
+                dictateStatus.classList.add('hidden');
             }
-        );
+        }
 
-        if (!recognizer) return;
-        isRecording = true;
-        dictateBtn.classList.add('recording');
-        recognizer.start();
+        dictateBtn.addEventListener('click', () => {
+            if (isRecording) {
+                recognizer && recognizer.stop();
+                return;
+            }
+
+            recognizer = VoiceA11y.createRecognizer(
+                (text) => {
+                    // Añade el texto dictado como nueva línea, respetando el formato
+                    // "Pregunta : Respuesta" si el usuario lo dice con la palabra "dos puntos"
+                    let cleaned = text.replace(/\bdos puntos\b/gi, ':').trim();
+                    const current = textInputEl.value;
+                    textInputEl.value = current && !current.endsWith('\n')
+                        ? `${current}\n${cleaned}`
+                        : `${current}${cleaned}`;
+                    setStatus('Escuchando… di "dos puntos" para separar pregunta y respuesta.');
+                },
+                () => {
+                    isRecording = false;
+                    dictateBtn.classList.remove('recording');
+                    setStatus('');
+                },
+                (e, reason) => {
+                    isRecording = false;
+                    dictateBtn.classList.remove('recording');
+                    const messages = {
+                        'permission': 'Micrófono bloqueado. Revisa el icono 🦁 de Brave o los permisos del sitio y actívalo.',
+                        'no-mic': 'No se detectó ningún micrófono conectado.',
+                        'network': 'Problema de conexión al reconocer la voz. Intenta de nuevo.',
+                        'no-speech': 'No se detectó audio. Intenta de nuevo.',
+                        'unknown': 'No se pudo dictar. Intenta de nuevo.'
+                    };
+                    setStatus(messages[reason] || messages.unknown);
+                    setTimeout(() => setStatus(''), 4000);
+                }
+            );
+
+            if (!recognizer) return;
+            isRecording = true;
+            dictateBtn.classList.add('recording');
+            setStatus('Escuchando… di "dos puntos" para separar pregunta y respuesta.');
+            recognizer.start();
+        });
+    })();
+
+    // ── Estado ────────────────────────────────────────────────
+    let allCards          = [];
+    let poolPracticeCards = [];
+    let currentCard       = null;
+    let practiceHistory   = [];
+    let stats             = { correct: 0, wrong: 0, skipped: 0 };
+
+    // ── DOM ───────────────────────────────────────────────────
+    const viewInput    = document.getElementById('view-input');
+    const viewStudy    = document.getElementById('view-study');
+    const viewPractice = document.getElementById('view-practice');
+    const viewResults  = document.getElementById('view-results');
+
+    const textInput          = document.getElementById('text-input');
+    const cardsGrid          = document.getElementById('flashcards-container');
+    const cardCounter        = document.getElementById('card-counter');
+
+    const generateBtn        = document.getElementById('generate-btn');
+    const backBtn            = document.getElementById('back-btn');
+    const startPracticeBtn   = document.getElementById('start-practice-btn');
+    const exitPracticeBtn    = document.getElementById('exit-practice-btn');
+    const retryBtn           = document.getElementById('retry-btn');
+
+    const practiceProgress   = document.getElementById('practice-progress');
+    const practiceQuestion   = document.getElementById('practice-question');
+    const mcOptionsContainer = document.getElementById('mc-options');
+    const feedbackMessage    = document.getElementById('feedback-message');
+    const skipBtn            = document.getElementById('skip-btn');
+    const nextBtn            = document.getElementById('next-btn');
+
+    const scorePercentage    = document.getElementById('score-percentage');
+    const statCorrect        = document.getElementById('stat-correct');
+    const statWrong          = document.getElementById('stat-wrong');
+    const statSkipped        = document.getElementById('stat-skipped');
+    const historyList        = document.getElementById('history-list');
+
+    const copyPromptBtn      = document.getElementById('copy-prompt-btn');
+    const aiPromptText       = document.getElementById('ai-prompt-text');
+    
+    // Panel de instrucciones
+    const instructionsToggle  = document.getElementById('instructions-toggle');
+    const instructionsContent = document.getElementById('instructions-content');
+
+    // ── Atajos de Teclado Globales e Inputs ───────────────────
+    
+    // Generar tarjetas con Ctrl + Enter (o Cmd + Enter en Mac)
+    textInput.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            generateBtn.click();
+        }
     });
-})();
 
-// ==========================================================================
-// 5. FLUJO DE AUTENTICACIÓN CON FIREBASE GOOGLE AUTH
-// ==========================================================================
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        loginScreen.classList.add('hidden');
-        loginError.classList.add('hidden');
-    } else {
-        loginScreen.classList.remove('hidden');
-        resetApp();
-    }
-});
-
-googleLoginBtn.addEventListener('click', async () => {
-    try {
-        loginError.classList.add('hidden');
-        await signInWithPopup(auth, provider);
-    } catch (error) {
-        console.error(error);
-        errorText.textContent = "Error de conexión con Google.";
-        loginError.classList.remove('hidden');
-    }
-});
-
-logoutBtn.addEventListener('click', async () => {
-    await signOut(auth);
-});
-
-// ==========================================================================
-// 6. LOGICA DINÁMICA DE LA APLICACIÓN (Flashcards + Quiz)
-// ==========================================================================
-let allCards = [];
-let poolPracticeCards = [];
-let currentCard = null;
-let quizIndex = 0;
-let stats = { correct: 0, wrong: 0, skipped: 0 };
-let practiceHistory = [];
-
-loadCardsBtn.addEventListener('click', () => {
-    const raw = dataInput.value.trim();
-    if (!raw) return alert("Ingresa un JSON estructurado.");
-
-    try {
-        allCards = JSON.parse(raw);
-        if (!Array.isArray(allCards)) throw new Error();
-
-        renderFlashcards();
-        switchView(studyView);
-    } catch (e) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Formato Incorrecto',
-            text: 'Asegúrate de estructurar el JSON como un arreglo válido: [{"q": "Pregunta", "a": "Respuesta"}]',
-            confirmButtonText: 'Revisar JSON',
-            buttonsStyling: false,
-            customClass: { confirmButton: 'btn-primary' }
+    // ── Acordeón de Instrucciones ─────────────────────────────
+    if (instructionsToggle && instructionsContent) {
+        instructionsToggle.addEventListener('click', () => {
+            instructionsToggle.classList.toggle('open');
+            instructionsContent.classList.toggle('open');
         });
     }
-});
 
-function renderFlashcards() {
-    cardsGrid.innerHTML = '';
-    cardCounter.textContent = `Tarjetas: ${allCards.length}`;
+    // ── Copiar prompt de IA ───────────────────────────────────
+    copyPromptBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(aiPromptText.textContent.trim()).then(() => {
+            copyPromptBtn.innerHTML = '<i class="ph ph-check"></i>';
+            copyPromptBtn.classList.add('copied');
+            setTimeout(() => {
+                copyPromptBtn.innerHTML = '<i class="ph ph-copy"></i>';
+                copyPromptBtn.classList.remove('copied');
+            }, 2200);
+        }).catch(() => {
+            const range = document.createRange();
+            range.selectNode(aiPromptText);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+        });
+    });
 
-    allCards.forEach(item => {
-        const wrap = document.createElement('div');
-        wrap.className = 'card-container';
-        wrap.setAttribute('tabindex', '0');
+    // ── Generar tarjetas ──────────────────────────────────────
+    generateBtn.addEventListener('click', () => {
+        const raw = textInput.value.trim();
+        
+        // 🔹 ALERTA ESTÉTICA 1: Formato incorrecto
+        if (!raw.includes(':')) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Formato requerido',
+                text: 'Usa el formato: Pregunta : Respuesta',
+                iconColor: '#d34f3e', /* Usa el color rojo de error de tu paleta (--err) */
+                confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Entendido',
+                buttonsStyling: false, /* Apagamos el botón azul feo por defecto */
+                customClass: {
+                    confirmButton: 'btn-primary' /* Le ponemos el botón verde de Piloncillos */
+                }
+            });
+            return;
+        }
 
-        wrap.innerHTML = `
+        allCards = [];
+        cardsGrid.innerHTML = '';
+
+        raw.split('\n').forEach(line => {
+            const colonIdx = line.indexOf(':');
+            if (colonIdx === -1) return;
+
+            const q = line.slice(0, colonIdx).trim();
+            const a = line.slice(colonIdx + 1).trim();
+
+            if (q && a) {
+                allCards.push({ q, a });
+                renderCard(q, a);
+            }
+        });
+
+        // 🔹 ALERTA ESTÉTICA 2: No se encontraron tarjetas
+        if (allCards.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: '¡Ups!',
+                text: 'No se encontraron tarjetas válidas. Revisa el formato: Pregunta : Respuesta',
+                iconColor: '#d34f3e',
+                confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Revisar',
+                buttonsStyling: false, 
+                customClass: {
+                    confirmButton: 'btn-primary' 
+                }
+            });
+            return;
+        }
+
+        cardCounter.textContent = `${allCards.length} Tarjeta${allCards.length !== 1 ? 's' : ''}`;
+        switchView(viewStudy);
+    });
+
+    // ── Navegación ────────────────────────────────────────────
+    backBtn.addEventListener('click',         () => switchView(viewInput));
+    startPracticeBtn.addEventListener('click', initPracticeSession);
+    exitPracticeBtn.addEventListener('click',  () => switchView(viewStudy));
+    retryBtn.addEventListener('click',         () => switchView(viewStudy));
+
+    // ── Sesión de práctica ────────────────────────────────────
+    function initPracticeSession() {
+        poolPracticeCards = [...allCards];
+        practiceHistory   = [];
+        stats             = { correct: 0, wrong: 0, skipped: 0 };
+        switchView(viewPractice);
+        loadNextCard();
+    }
+
+    function loadNextCard() {
+        if (poolPracticeCards.length === 0) {
+            showResults();
+            return;
+        }
+
+        mcOptionsContainer.innerHTML = '';
+        feedbackMessage.textContent  = '';
+        feedbackMessage.className    = 'feedback';
+        skipBtn.classList.remove('hidden');
+        nextBtn.classList.add('hidden');
+
+        const idx = allCards.length - poolPracticeCards.length + 1;
+        practiceProgress.textContent = `${idx} / ${allCards.length}`;
+
+        const rnd    = Math.floor(Math.random() * poolPracticeCards.length);
+        currentCard  = poolPracticeCards.splice(rnd, 1)[0];
+        practiceQuestion.textContent = currentCard.q;
+
+        buildOptions(currentCard);
+
+        // Si el modo "Leer en voz alta" está activo, lee la pregunta automáticamente
+        VoiceA11y.autoSpeak(currentCard.q, document.getElementById('listen-question-btn'));
+    }
+
+    // Botón manual para escuchar la pregunta del quiz en cualquier momento
+    const listenQuestionBtn = document.getElementById('listen-question-btn');
+    if (listenQuestionBtn) {
+        listenQuestionBtn.addEventListener('click', () => {
+            if (currentCard) VoiceA11y.speak(currentCard.q, listenQuestionBtn);
+        });
+    }
+
+    function buildOptions(card) {
+        const distractors = [...new Set(allCards.map(c => c.a).filter(a => a !== card.a))];
+        distractors.sort(() => 0.5 - Math.random());
+
+        const options = [...distractors.slice(0, 3), card.a].sort(() => 0.5 - Math.random());
+
+        options.forEach(text => {
+            const btn       = document.createElement('button');
+            btn.className   = 'mc-option';
+            btn.textContent = text;
+            btn.onclick     = () => grade(text, btn);
+            mcOptionsContainer.appendChild(btn);
+        });
+    }
+
+    function grade(selected, clickedBtn) {
+        const allBtns = mcOptionsContainer.querySelectorAll('.mc-option');
+        allBtns.forEach(b => b.disabled = true);
+
+        skipBtn.classList.add('hidden');
+        nextBtn.classList.remove('hidden');
+
+        const isCorrect = selected === currentCard.a;
+
+        if (isCorrect) {
+            stats.correct++;
+            clickedBtn.classList.add('correct');
+            feedbackMessage.textContent = '¡Excelente! Respuesta correcta.';
+            feedbackMessage.className   = 'feedback correct';
+            VoiceA11y.autoSpeak(`Correcto. La respuesta es ${currentCard.a}.`);
+        } else {
+            stats.wrong++;
+            clickedBtn.classList.add('wrong');
+            allBtns.forEach(b => {
+                if (b.textContent === currentCard.a) b.classList.add('correct');
+            });
+            feedbackMessage.textContent = 'Incorrecto. Mira cuál era la respuesta.';
+            feedbackMessage.className   = 'feedback wrong';
+            VoiceA11y.autoSpeak(`Incorrecto. La respuesta correcta era ${currentCard.a}.`);
+        }
+
+        practiceHistory.push({
+            question:      currentCard.q,
+            userAnswer:    selected,
+            correctAnswer: currentCard.a,
+            status:        isCorrect ? 'correct' : 'wrong'
+        });
+    }
+
+    skipBtn.addEventListener('click', () => {
+        const allBtns = mcOptionsContainer.querySelectorAll('.mc-option');
+        allBtns.forEach(b => {
+            b.disabled = true;
+            if (b.textContent === currentCard.a) b.classList.add('correct');
+            else b.style.opacity = '0.42';
+        });
+
+        stats.skipped++;
+        feedbackMessage.textContent = 'Saltada. Esa era la respuesta correcta.';
+        feedbackMessage.className   = 'feedback wrong';
+        skipBtn.classList.add('hidden');
+        nextBtn.classList.remove('hidden');
+
+        practiceHistory.push({
+            question:      currentCard.q,
+            userAnswer:    'Sin respuesta',
+            correctAnswer: currentCard.a,
+            status:        'skipped'
+        });
+    });
+
+    nextBtn.addEventListener('click', loadNextCard);
+
+    // ── Resultados ────────────────────────────────────────────
+    function showResults() {
+        switchView(viewResults);
+
+        const total = allCards.length;
+        const pct   = total > 0 ? Math.round((stats.correct / total) * 100) : 0;
+
+        scorePercentage.textContent = `${pct}%`;
+        statCorrect.textContent     = stats.correct;
+        statWrong.textContent       = stats.wrong;
+        statSkipped.textContent     = stats.skipped;
+
+        const ringEl       = document.getElementById('score-ring-fill');
+        const circumference = 251.2;
+        if (ringEl) {
+            setTimeout(() => {
+                ringEl.style.strokeDashoffset = circumference - (pct / 100) * circumference;
+            }, 120);
+        }
+
+        historyList.innerHTML = '';
+        const labels = { correct: 'Correcto', wrong: 'Incorrecto', skipped: 'Sin respuesta' };
+
+        practiceHistory.forEach(item => {
+            const el        = document.createElement('div');
+            el.className    = `history-item item-${item.status}`;
+            el.innerHTML    = `
+                <span class="status-tag ${item.status}">${labels[item.status]}</span>
+                <p>${escapeHtml(item.question)}</p>
+                <span>Tu respuesta: <strong>${escapeHtml(item.userAnswer)}</strong></span>
+                ${item.status !== 'correct'
+                    ? `<span>Correcta: <strong>${escapeHtml(item.correctAnswer)}</strong></span>`
+                    : ''}
+            `;
+            historyList.appendChild(el);
+        });
+
+        const summaryText = `Terminaste el quiz con ${pct} por ciento de aciertos. ${stats.correct} correctas, ${stats.wrong} incorrectas y ${stats.skipped} saltadas.`;
+        const listenResultsBtn = document.getElementById('listen-results-btn');
+        if (listenResultsBtn) {
+            listenResultsBtn.onclick = () => VoiceA11y.speak(summaryText, listenResultsBtn);
+        }
+        VoiceA11y.autoSpeak(summaryText, listenResultsBtn);
+    }
+
+    // ── Renderizar tarjeta de estudio ─────────────────────────
+    function renderCard(q, a) {
+        const wrap      = document.createElement('div');
+        wrap.className  = 'card-container';
+        wrap.setAttribute('tabindex', '0'); // Enfocable con Tab
+
+        wrap.innerHTML  = `
             <div class="card">
-                <div class="card-face">
-                    ${escapeHtml(item.q)}
-                    <button type="button" class="card-listen-btn" title="Escuchar pregunta">
-                        <i class="fas fa-volume-up"></i>
+                <div class="card-face card-front">
+                    ${escapeHtml(q)}
+                    <button type="button" class="card-listen-btn" aria-label="Escuchar pregunta" title="Escuchar pregunta">
+                        <i class="ph ph-speaker-high"></i>
                     </button>
                 </div>
-                <div class="card-back card-face">
-                    ${escapeHtml(item.a)}
-                    <button type="button" class="card-listen-btn" title="Escuchar respuesta">
-                        <i class="fas fa-volume-up"></i>
+                <div class="card-face card-back">
+                    ${escapeHtml(a)}
+                    <button type="button" class="card-listen-btn" aria-label="Escuchar respuesta" title="Escuchar respuesta">
+                        <i class="ph ph-speaker-high"></i>
                     </button>
                 </div>
             </div>
         `;
 
+        // Voltear con click (pero no si se pulsó el botón de audio)
         wrap.addEventListener('click', (e) => {
             if (e.target.closest('.card-listen-btn')) return;
             wrap.querySelector('.card').classList.toggle('is-flipped');
         });
 
+        // Voltear con teclado (Enter o Espacio)
         wrap.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -410,199 +758,45 @@ function renderFlashcards() {
             }
         });
 
-        wrap.querySelector('.card-face:not(.card-back) .card-listen-btn').addEventListener('click', (e) => {
+        // Botones de audio: leen la pregunta o la respuesta sin voltear la tarjeta
+        const frontBtn = wrap.querySelector('.card-front .card-listen-btn');
+        const backBtn  = wrap.querySelector('.card-back .card-listen-btn');
+        frontBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            VoiceA11y.speak(item.q, e.currentTarget);
+            VoiceA11y.speak(q, frontBtn);
         });
-
-        wrap.querySelector('.card-back .card-listen-btn').addEventListener('click', (e) => {
+        backBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            VoiceA11y.speak(item.a, e.currentTarget);
+            VoiceA11y.speak(a, backBtn);
         });
 
         cardsGrid.appendChild(wrap);
-    });
-}
-
-// ==========================================================================
-// 7. SISTEMA DEL QUIZ (Múltiple Opción)
-// ==========================================================================
-goQuizBtn.addEventListener('click', () => {
-    if (allCards.length === 0) return alert("Carga tarjetas primero.");
-    poolPracticeCards = [...allCards];
-    practiceHistory = [];
-    stats = { correct: 0, wrong: 0, skipped: 0 };
-    quizIndex = 0;
-    switchView(quizView);
-    loadNextQuizCard();
-});
-
-function loadNextQuizCard() {
-    if (poolPracticeCards.length === 0) {
-        showResults();
-        return;
     }
 
-    mcGrid.innerHTML = '';
-    quizFeedback.textContent = '';
-    quizFeedback.className = 'feedback';
-    quizSkipBtn.classList.remove('hidden');
-    quizNextBtn.classList.add('hidden');
+    // Escapa HTML para insertar texto de usuario de forma segura
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
 
-    quizIndex++;
-    quizProgress.textContent = `Pregunta ${quizIndex} de ${allCards.length}`;
-
-    const rnd = Math.floor(Math.random() * poolPracticeCards.length);
-    currentCard = poolPracticeCards.splice(rnd, 1)[0];
-    practiceQuestion.textContent = currentCard.q;
-
-    const distractors = [...new Set(allCards.map(c => c.a).filter(a => a !== currentCard.a))];
-    distractors.sort(() => 0.5 - Math.random());
-    const options = [...distractors.slice(0, 3), currentCard.a].sort(() => 0.5 - Math.random());
-
-    options.forEach(text => {
-        const btn = document.createElement('button');
-        btn.className = 'mc-option';
-        btn.textContent = text;
-        btn.onclick = () => gradeQuizAnswer(text, btn);
-        mcGrid.appendChild(btn);
-    });
-
-    VoiceA11y.autoSpeak(currentCard.q, document.getElementById('quiz-listen-btn'));
-}
-
-document.getElementById('quiz-listen-btn').addEventListener('click', (e) => {
-    if (currentCard) VoiceA11y.speak(currentCard.q, e.currentTarget);
-});
-
-function gradeQuizAnswer(selected, clickedBtn) {
-    const allBtns = mcGrid.querySelectorAll('.mc-option');
-    allBtns.forEach(b => b.disabled = true);
-
-    quizSkipBtn.classList.add('hidden');
-    quizNextBtn.classList.remove('hidden');
-
-    const isCorrect = selected === currentCard.a;
-
-    if (isCorrect) {
-        stats.correct++;
-        clickedBtn.classList.add('correct');
-        quizFeedback.textContent = '¡Excelente! Respuesta correcta.';
-        quizFeedback.className = 'feedback correct';
-        VoiceA11y.autoSpeak(`Correcto. La respuesta es ${currentCard.a}.`);
-    } else {
-        stats.wrong++;
-        clickedBtn.classList.add('wrong');
-        allBtns.forEach(b => {
-            if (b.textContent === currentCard.a) b.classList.add('correct');
+    // ── Cambiar vista ─────────────────────────────────────────
+    function switchView(next) {
+        VoiceA11y.stop(); // evita que se solape audio de la vista anterior
+        [viewInput, viewStudy, viewPractice, viewResults].forEach(v => {
+            v.classList.remove('active');
+            v.classList.add('hidden');
         });
-        quizFeedback.textContent = 'Incorrecto. Mira cuál era la respuesta.';
-        quizFeedback.className = 'feedback wrong';
-        VoiceA11y.autoSpeak(`Incorrecto. La respuesta correcta era ${currentCard.a}.`);
+        next.classList.remove('hidden');
+        next.classList.add('active');
     }
 
-    practiceHistory.push({
-        question: currentCard.q,
-        userAnswer: selected,
-        correctAnswer: currentCard.a,
-        status: isCorrect ? 'correct' : 'wrong'
+   // ── Magia al regresar a la pestaña (CORREGIDO) ────────────
+    document.addEventListener('visibilitychange', () => {
+        // Solo enfoca el texto si la pestaña acaba de volverse visible tras estar oculta
+        if (document.visibilityState === 'visible' && viewInput.classList.contains('active')) {
+            textInput.focus();
+        }
     });
-}
 
-quizSkipBtn.addEventListener('click', () => {
-    stats.skipped++;
-    practiceHistory.push({
-        question: currentCard.q,
-        userAnswer: '[Saltada]',
-        correctAnswer: currentCard.a,
-        status: 'skipped'
-    });
-    loadNextQuizCard();
 });
-
-quizNextBtn.addEventListener('click', loadNextQuizCard);
-
-// ==========================================================================
-// 8. VISTA DE RESULTADOS
-// ==========================================================================
-function showResults() {
-    switchView(resultsView);
-
-    const total = allCards.length;
-    const pct = total > 0 ? Math.round((stats.correct / total) * 100) : 0;
-
-    scorePercent.textContent = `${pct}%`;
-    statCorrect.textContent = stats.correct;
-    statWrong.textContent = stats.wrong;
-    statSkipped.textContent = stats.skipped;
-
-    const circumference = 251.2;
-    if (ringFill) {
-        setTimeout(() => {
-            ringFill.style.strokeDashoffset = circumference - (pct / 100) * circumference;
-        }, 120);
-    }
-
-    historyList.innerHTML = '';
-    const labels = { correct: 'Correcto', wrong: 'Incorrecto', skipped: 'Saltada' };
-
-    practiceHistory.forEach(item => {
-        const el = document.createElement('div');
-        el.className = `history-item item-${item.status}`;
-        el.innerHTML = `
-            <span class="status-tag ${item.status}">${labels[item.status]}</span>
-            <p>${escapeHtml(item.question)}</p>
-            <span>Tu respuesta: <strong>${escapeHtml(item.userAnswer)}</strong></span>
-            ${item.status !== 'correct' ? `<span>Correcta: <strong>${escapeHtml(item.correctAnswer)}</strong></span>` : ''}
-        `;
-        historyList.appendChild(el);
-    });
-
-    const summaryText = `Terminaste el quiz con ${pct} por ciento de aciertos.`;
-    VoiceA11y.autoSpeak(summaryText);
-}
-
-restartBtn.addEventListener('click', () => {
-    switchView(studyView);
-    renderFlashcards();
-});
-
-// ==========================================================================
-// 9. FUNCIONES DE SOPORTE E INTERFAZ
-// ==========================================================================
-function switchView(next) {
-    VoiceA11y.stop();
-    [studyView, quizView, resultsView].forEach(v => {
-        v.classList.remove('active');
-        v.classList.add('hidden');
-    });
-    next.classList.remove('hidden');
-    next.classList.add('active');
-}
-
-function resetApp() {
-    allCards = [];
-    cardsGrid.innerHTML = '';
-    dataInput.value = '';
-    [studyView, quizView, resultsView].forEach(v => {
-        v.classList.remove('active');
-        v.classList.add('hidden');
-    });
-}
-
-function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-}
-
-// Acordeón de la guía de uso
-const accordionToggleBtn = document.getElementById('accordion-toggle-btn');
-const accordionContent = document.getElementById('accordion-content');
-if (accordionToggleBtn && accordionContent) {
-    accordionToggleBtn.addEventListener('click', () => {
-        accordionContent.classList.toggle('hidden');
-        const isHidden = accordionContent.classList.contains('hidden');
-        accordionToggleBtn.querySelector('.caret').style.transform = isHidden ? "rotate(0deg)" : "rotate(180deg)";
-    });
-}

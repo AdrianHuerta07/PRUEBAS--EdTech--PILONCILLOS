@@ -4,7 +4,7 @@
 // completamente offline una vez visitada la primera vez.
 // ══════════════════════════════════════════════════════════
 
-const CACHE_NAME = 'piloncillos-flashcards-v9';
+const CACHE_NAME = 'piloncillos-flashcards-v';
 
 // Archivos propios de la app (siempre disponibles offline)
 const CORE_ASSETS = [
