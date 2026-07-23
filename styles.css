@@ -44,12 +44,13 @@
 html, body {
     width: 100%;
     max-width: 100vw;
-    overflow-x: hidden;
-    
-    /* Previene el pull-to-refresh y el rebote elástico en móviles */
-    overscroll-behavior-y: none;
-}
+    overflow-x: hidden; /* Evita scroll horizontal */
+    overflow-y: auto;   /* Forzar a que el scroll vertical esté SIEMPRE permitido */
 
+    /* Usa 'contain' en lugar de 'none'. 
+       Esto bloquea el pull-to-refresh pero PERMITE el scroll normal hacia abajo */
+    overscroll-behavior-y: contain; 
+}
 body.clay-bg {
     font-family: var(--font-main);
     background-color: var(--clay-bg);
