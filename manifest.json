@@ -1,13 +1,13 @@
 {
   "name": "Flashcards - Equipo Piloncillos",
   "short_name": "Flashcards",
-  "description": "Aplicación de flashcards con accesibilidad por voz, del Equipo Piloncillos - Universidad Tecnológica de la Costa.",
+  "description": "Aplicación de flashcards con accesibilidad por voz y diseño claymórfico educativo",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0b1a16",
-  "theme_color": "#0b1a16",
+  "background_color": "#eef6f0",
+  "theme_color": "#58cc02",
   "lang": "es",
   "icons": [
     {

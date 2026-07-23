@@ -907,3 +907,50 @@ body.dark-mode .member-info small { color: #a0aec0; }
         font-size: 0.85rem;
     }
 }
+
+/* ============================================================
+   CORRECCIÓN DEFINITIVA DE LA BARRA DE ACCIONES (PRACTICAR QUIZ)
+   ============================================================ */
+
+/* Asegura que en cualquier pantalla la barra respete los límites */
+.study-actions-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 0.5rem !important;
+    overflow: hidden; /* Evita cualquier desbordamiento horizontal */
+}
+
+/* Reducción responsiva para pantallas pequeñas (móviles) */
+@media (max-width: 768px) {
+    .study-actions-bar {
+        /* Permite que el botón baje a una nueva línea si la pantalla es MUY estrecha, 
+           o se ajuste dinámicamente sin salirse */
+        flex-wrap: wrap !important; 
+    }
+
+    /* Ajustar tamaño del botón "PRACTICAR QUIZ" en móviles */
+    .study-actions-bar .clay-btn, 
+    #start-practice-btn {
+        font-size: 0.75rem !important;
+        padding: 0.5rem 0.75rem !important;
+        white-space: nowrap !important;
+        max-width: 100% !important;
+    }
+
+    /* Ajustar tamaño de la etiqueta "1 Tarjeta" */
+    .cards-badge {
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.6rem !important;
+        white-space: nowrap !important;
+    }
+
+    /* Ajustar tamaño del botón "VOLVER" */
+    #back-btn {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.75rem !important;
+    }
+}
