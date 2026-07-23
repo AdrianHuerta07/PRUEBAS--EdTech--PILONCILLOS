@@ -736,7 +736,7 @@ body.dark-mode .member-info strong { color: #ffffff; }
 body.dark-mode .member-info small { color: #a0aec0; }
 
 /* ============================================================
-   AJUSTES RESPONSIVOS PARA MÓVIL (PANTALLAS SMALL/MOBILE)
+   AJUSTES RESPONSIVOS COMPLETO PARA MÓVIL (PANTALLAS SMALL/MOBILE)
    ============================================================ */
 
 @media (max-width: 768px) {
@@ -849,5 +849,61 @@ body.dark-mode .member-info small { color: #a0aec0; }
     .card-face {
         font-size: 0.9rem;
         padding: 0.8rem;
+    }
+
+    /* 6. Solución para barras superiores desbordadas (Estudio / Práctica) */
+    .study-actions-bar,
+    .practice-header {
+        display: flex;
+        flex-wrap: wrap; /* Evita que el botón PRACTICAR se salga de la pantalla */
+        gap: 0.5rem;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    /* Ajuste de botones superiores */
+    .study-actions-bar .clay-btn,
+    .practice-header .clay-btn {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem !important;
+        height: auto !important;
+        min-height: 38px;
+        white-space: nowrap;
+    }
+
+    /* Badges / Contadores */
+    .cards-badge,
+    .practice-progress {
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.75rem !important;
+        white-space: nowrap;
+    }
+
+    /* Estilo corregido para el botón "✕ Salir" */
+    #exit-practice-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 12px;
+        color: inherit;
+        padding: 0.45rem 0.8rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        backdrop-filter: blur(6px);
+    }
+
+    body.dark-mode #exit-practice-btn {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Opciones de opción múltiple ajustadas para pantallas pequeñas */
+    .mc-option {
+        padding: 0.75rem;
+        font-size: 0.85rem;
     }
 }
