@@ -1,72 +1,71 @@
-// ══════════════════════════════════════════════════════════
-// SERVICE WORKER · Flashcards Piloncillos
-// Cachea el "app shell" para que la aplicación funcione
-// completamente offline una vez visitada la primera vez.
-// ══════════════════════════════════════════════════════════
+const CACHE_NAME = 'piloncillos-flashcards-v1';
 
-const CACHE_NAME = 'piloncillos-flashcards-v19';
-
-// Archivos propios de la app (siempre disponibles offline)
-const CORE_ASSETS = [
-    './',
-    './index.html',
-    './app.js',
-    './styles.css',
-    './manifest.json',
-    './icon.svg'
+// Recusos esenciales para el funcionamiento Offline de la App
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './styles.css',
+  './app.js',
+  './manifest.json',
+  './icon.svg',
+  // CDNs externos para asegurar carga sin conexión tras la primera visita
+  'https://unpkg.com/@phosphor-icons/web',
+  'https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800&family=Feather:wght@700;800;900&display=swap',
+  'https://cdn.jsdelivr.net/npm/sweetalert2@11'
 ];
 
-// Recursos externos (fuentes e iconos). Si no hay internet en la
-// primera visita, simplemente no se cachean y la app sigue
-// funcionando con las fuentes del sistema.
-const EXTERNAL_ASSETS = [
-    'https://unpkg.com/@phosphor-icons/web',
-    'https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap'
-];
-
+// 1. Evento Install: Guarda en caché todos los archivos estáticos requeridos
 self.addEventListener('install', (event) => {
-    self.skipWaiting();
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(async (cache) => {
-            await cache.addAll(CORE_ASSETS);
-            await Promise.allSettled(
-                EXTERNAL_ASSETS.map(url => cache.add(url).catch(() => null))
-            );
-        })
-    );
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        return cache.addAll(ASSETS_TO_CACHE);
+      })
+      .then(() => self.skipWaiting())
+  );
 });
 
+// 2. Evento Activate: Elimina versiones antiguas de caché para mantener al día la app
 self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((keys) =>
-            Promise.all(
-                keys.filter((key) => key !== CACHE_NAME)
-                    .map((key) => caches.delete(key))
-            )
-        ).then(() => self.clients.claim())
-    );
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
+// 3. Evento Fetch: Estrategia Cache First (Intenta responder desde caché; si no, consulta la red)
 self.addEventListener('fetch', (event) => {
-    const req = event.request;
+  // Ignorar peticiones que no sean GET
+  if (event.request.method !== 'GET') return;
 
-    if (req.method !== 'GET') return;
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
 
-    const isCoreAsset = CORE_ASSETS.some((asset) => req.url.endsWith(asset.replace('./', '')));
+      return fetch(event.request).then((networkResponse) => {
+        // Verificar validez de la respuesta antes de guardarla en caché dinámico
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
+        }
 
-    if (isCoreAsset) {
-        event.respondWith(
-            caches.match(req).then((cached) => cached || fetch(req))
-        );
-    } else {
-        event.respondWith(
-            fetch(req)
-                .then((res) => {
-                    const resClone = res.clone();
-                    caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
-                    return res;
-                })
-                .catch(() => caches.match(req))
-        );
-    }
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
+
+        return networkResponse;
+      }).catch(() => {
+        // Opcional: Manejo de fallback si no hay red ni caché
+      });
+    })
+  );
 });

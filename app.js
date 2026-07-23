@@ -1,10 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ══════════════════════════════════════════════════════════
+    // MÓDULO CONTROL MODO OSCURO (DAY / NIGHT SWITCH)
+    // ══════════════════════════════════════════════════════════
+    (function setupThemeToggle() {
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const THEME_KEY = 'piloncillos_theme_preference';
+
+        // Cargar preferencia guardada o detectar preferencia del sistema
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            document.body.classList.add('dark-mode');
+        }
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                
+                // Guardar estado en LocalStorage
+                localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+                
+                // Anuncio de accesibilidad
+                if (typeof VoiceA11y !== 'undefined' && VoiceA11y.announce) {
+                    VoiceA11y.announce(`Modo ${isDark ? 'oscuro' : 'claro'} activado`);
+                }
+            });
+        }
+    })();
+
+    // ══════════════════════════════════════════════════════════
     // MÓDULO DE LOGIN
-    // Credenciales fijas de acceso. Se valida localmente y se
-    // recuerda la sesión en localStorage para no pedir login
-    // en cada visita (útil en modo offline / app instalada).
     // ══════════════════════════════════════════════════════════
     (function setupLogin() {
         const VALID_EMAIL    = 'TCDS@gmail.com';
@@ -35,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             emailInput.focus();
         }
 
-        // Si ya había sesión guardada (por ejemplo, app instalada sin internet), entra directo
         if (localStorage.getItem(SESSION_KEY) === 'true') {
             showApp();
         } else {
@@ -50,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const email    = emailInput.value.trim();
                 const password = passwordInput.value;
 
-                // Validación manual: ¿El correo está vacío?
                 if (!email) {
                     loginErrorText.textContent = "Por favor, completa el correo institucional.";
                     loginError.classList.remove('hidden');
@@ -58,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // Validación manual: ¿La contraseña está vacía?
                 if (!password) {
                     loginErrorText.textContent = "Por favor, ingresa tu contraseña.";
                     loginError.classList.remove('hidden');
@@ -99,18 +124,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ══════════════════════════════════════════════════════════
     // MÓDULO DE ACCESIBILIDAD POR VOZ (Web Speech API)
-    // Texto→Voz (TTS) para leer contenido, y Voz→Texto (STT)
-    // para dictar tarjetas. Pensado para personas con dificultad
-    // para leer o que prefieren usar la app hablando.
-    // ══════════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════════════
     const VoiceA11y = (() => {
         const synth = window.speechSynthesis || null;
         let voices = [];
         let selectedVoiceURI = null;
         let rate = 0.95;
-        let masterEnabled = false; // "Leer en voz alta" global activado
+        let masterEnabled = false;
         let currentSpeakingEl = null;
-        let keepAliveTimer = null;  // Fix bug Chromium/Brave: evita que synth se congele
+        let keepAliveTimer = null;
         let voicesReadyResolvers = [];
 
         const announcer = document.getElementById('aria-announcer');
@@ -357,14 +379,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!VoiceA11y.recognitionSupported()) {
             dictateBtn.classList.add('unsupported');
-            dictateBtn.title = 'Dictado por voz no disponible en este navegador (prueba Chrome o Brave)';
+            dictateBtn.title = 'Dictado por voz no disponible en este navegador';
             return;
         }
 
         const isSecure = window.isSecureContext;
         if (!isSecure) {
             dictateBtn.classList.add('unsupported');
-            dictateBtn.title = 'El dictado requiere HTTPS o localhost. Sirve la página con un servidor local o publícala en HTTPS.';
+            dictateBtn.title = 'El dictado requiere HTTPS o localhost.';
             return;
         }
 
@@ -405,11 +427,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     isRecording = false;
                     dictateBtn.classList.remove('recording');
                     const messages = {
-                        'permission': 'Micrófono bloqueado. Revisa el icono 🦁 de Brave o los permisos del sitio y actívalo.',
+                        'permission': 'Micrófono bloqueado. Revisa los permisos del sitio.',
                         'no-mic': 'No se detectó ningún micrófono conectado.',
-                        'network': 'Problema de conexión al reconocer la voz. Intenta de nuevo.',
-                        'no-speech': 'No se detectó audio. Intenta de nuevo.',
-                        'unknown': 'No se pudo dictar. Intenta de nuevo.'
+                        'network': 'Problema de conexión al reconocer la voz.',
+                        'no-speech': 'No se detectó audio.',
+                        'unknown': 'No se pudo dictar.'
                     };
                     setStatus(messages[reason] || messages.unknown);
                     setTimeout(() => setStatus(''), 4000);
@@ -502,11 +524,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon: 'warning',
                 title: 'Formato requerido',
                 text: 'Usa el formato: Pregunta : Respuesta',
-                iconColor: '#d34f3e',
+                iconColor: '#ff4b4b',
                 confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Entendido',
                 buttonsStyling: false,
                 customClass: {
-                    confirmButton: 'btn-primary'
+                    confirmButton: 'clay-btn clay-btn-green'
                 }
             });
             return;
@@ -533,11 +555,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 icon: 'error',
                 title: '¡Ups!',
                 text: 'No se encontraron tarjetas válidas. Revisa el formato: Pregunta : Respuesta',
-                iconColor: '#d34f3e',
+                iconColor: '#ff4b4b',
                 confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Revisar',
                 buttonsStyling: false, 
                 customClass: {
-                    confirmButton: 'btn-primary' 
+                    confirmButton: 'clay-btn clay-btn-green' 
                 }
             });
             return;
@@ -694,7 +716,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <p>${escapeHtml(item.question)}</p>
                 <span>Tu respuesta: <strong>${escapeHtml(item.userAnswer)}</strong></span>
                 ${item.status !== 'correct'
-                    ? `<span>Correcta: <strong>${escapeHtml(item.correctAnswer)}</strong></span>`
+                    ? `<br><span>Correcta: <strong>${escapeHtml(item.correctAnswer)}</strong></span>`
                     : ''}
             `;
             historyList.appendChild(el);

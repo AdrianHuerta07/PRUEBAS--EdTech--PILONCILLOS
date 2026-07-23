@@ -6,54 +6,54 @@
     <title>Flashcards | Piloncillos</title>
     <link rel="stylesheet" href="styles.css">
     
-    <!-- Google Fonts optimizado para pesos Bold/ExtraBold estilo Duolingo -->
+    <!-- Google Fonts optimizado para estilo Duolingo (Feather / Nunito) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:ital,wght@0,500;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800&family=Feather:wght@700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <!-- PWA: instalable y offline -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0b1a16">
+    <meta name="theme-color" content="#58cc02">
 </head>
-<body>
+<body class="clay-bg">
 
-    <!-- Región viva para anuncios de accesibilidad (invisible, para lectores de pantalla) -->
+    <!-- Región viva para anuncios de accesibilidad -->
     <div id="aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <!-- ══════════════════════════════════════════════════════
-         PANTALLA DE LOGIN
+         PANTALLA DE LOGIN (Estilo Claymorfismo Duolingo)
          ══════════════════════════════════════════════════════ -->
     <div id="login-screen" class="login-screen">
-        <div class="login-card">
+        <div class="login-card clay-card">
             <div class="login-brand">
-                <div class="brand-mark" aria-hidden="true">
+                <div class="brand-mark clay-badge-icon" aria-hidden="true">
                     <i class="ph-fill ph-cards"></i>
                 </div>
                 <h1>Flashcards</h1>
-                <p>Equipo Piloncillos</p>
+                <p class="duo-sub">Equipo Piloncillos</p>
             </div>
 
             <form id="login-form" class="login-form" autocomplete="off">
-                <label for="login-email">Correo institucional</label>
-                <div class="login-input-wrap">
+                <label for="login-email" class="clay-label">Correo institucional</label>
+                <div class="login-input-wrap clay-input-wrap">
                     <i class="ph ph-envelope-simple"></i>
-                    <input type="email" id="login-email" placeholder="correo@ejemplo.com" autocomplete="username">
+                    <input type="email" id="login-email" class="clay-input" placeholder="correo@ejemplo.com" autocomplete="username">
                 </div>
 
-                <label for="login-password">Contraseña</label>
-                <div class="login-input-wrap">
+                <label for="login-password" class="clay-label">Contraseña</label>
+                <div class="login-input-wrap clay-input-wrap">
                     <i class="ph ph-lock-key"></i>
-                    <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+                    <input type="password" id="login-password" class="clay-input" placeholder="••••••••" autocomplete="current-password">
                 </div>
 
-                <p id="login-error" class="login-error hidden" role="alert">
+                <p id="login-error" class="login-error clay-error hidden" role="alert">
                     <i class="ph-fill ph-warning-circle"></i>
                     <span id="login-error-text">Correo o contraseña incorrectos.</span>
                 </p>
 
-                <button type="submit" class="btn-primary full login-submit-btn">
+                <button type="submit" class="btn-primary full login-submit-btn clay-btn">
                     <i class="ph-fill ph-sign-in"></i>
                     Iniciar sesión
                 </button>
@@ -62,17 +62,15 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════
-         CONTENIDO DE LA APP (oculto hasta iniciar sesión)
+         CONTENIDO DE LA APP
          ══════════════════════════════════════════════════════ -->
     <div id="app-content" class="hidden">
 
-    <!-- ══════════════════════════════════════════════════════
-         HEADER INSTITUCIONAL
-         ══════════════════════════════════════════════════════ -->
-    <header class="site-header">
+    <!-- HEADER INSTITUCIONAL -->
+    <header class="site-header clay-header">
         <div class="site-header-inner">
             <div class="brand">
-                <div class="brand-mark" aria-hidden="true">
+                <div class="brand-mark clay-badge-icon" aria-hidden="true">
                     <i class="ph-fill ph-cards"></i>
                 </div>
                 <div class="brand-text">
@@ -81,131 +79,172 @@
                 </div>
             </div>
             <div class="header-actions">
-                <button id="logout-btn" class="logout-btn" type="button" title="Cerrar sesión">
+                <!-- Interruptor Modo Claro / Modo Oscuro estilo imagen -->
+                <button id="theme-toggle" class="theme-switch" type="button" aria-label="Cambiar modo oscuro">
+                    <span class="switch-track">
+                        <span class="switch-thumb">
+                            <i class="ph ph-sun sun-icon"></i>
+                            <i class="ph-fill ph-moon moon-icon"></i>
+                        </span>
+                        <span class="switch-text day-text">MODO<br>DIA</span>
+                        <span class="switch-text night-text">MODO<br>NOCHE</span>
+                    </span>
+                </button>
+
+                <button id="logout-btn" class="logout-btn clay-btn-icon" type="button" title="Cerrar sesión">
                     <i class="ph ph-sign-out"></i>
                 </button>
-                <button id="menu-toggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="voice-settings-panel" title="Ajustes de voz y accesibilidad">
+                <button id="menu-toggle" class="menu-toggle clay-btn-icon" type="button" aria-expanded="false" aria-controls="voice-settings-panel" title="Ajustes de voz y accesibilidad">
                     <i class="ph ph-list"></i>
                 </button>
             </div>
         </div>
-        <div class="header-rule"></div>
     </header>
 
-    <!-- ══════════════════════════════════════════════════════
-         PANEL DE ACCESIBILIDAD (desplegado desde el menú)
-         ══════════════════════════════════════════════════════ -->
-    <div id="voice-settings-panel" class="voice-settings-panel hidden">
+    <!-- PANEL DE ACCESIBILIDAD -->
+    <div id="voice-settings-panel" class="voice-settings-panel clay-card hidden">
         <div class="voice-panel-head">
             <i class="ph-fill ph-ear"></i>
             <h3>Accesibilidad por voz</h3>
         </div>
 
-        <button id="voice-master-toggle" class="voice-master-btn" type="button" aria-pressed="false">
+        <button id="voice-master-toggle" class="voice-master-btn clay-btn clay-btn-blue" type="button" aria-pressed="false">
             <i class="ph ph-speaker-high"></i>
             <span class="voice-btn-label">Activar lectura en voz alta</span>
         </button>
-        <button id="voice-stop-btn" class="voice-stop-btn hidden" type="button">
+        <button id="voice-stop-btn" class="voice-stop-btn clay-btn clay-btn-red hidden" type="button">
             <i class="ph ph-stop"></i> Detener lectura
         </button>
 
         <div class="voice-settings-row">
-            <label for="voice-rate">Velocidad de lectura</label>
-            <input type="range" id="voice-rate" min="0.6" max="1.6" step="0.1" value="0.95">
-            <span id="voice-rate-val">0.95×</span>
+            <label for="voice-rate" class="clay-label">Velocidad de lectura</label>
+            <input type="range" id="voice-rate" min="0.6" max="1.6" step="0.1" value="0.95" class="clay-range">
+            <span id="voice-rate-val" class="clay-badge-sm">0.95×</span>
         </div>
         <div class="voice-settings-row">
-            <label for="voice-select">Voz</label>
-            <select id="voice-select"></select>
+            <label for="voice-select" class="clay-label">Voz</label>
+            <select id="voice-select" class="clay-select"></select>
         </div>
         <p class="voice-settings-hint"><i class="ph ph-info"></i> Toca cualquier tarjeta o pregunta con el icono <i class="ph ph-speaker-high"></i> para escucharla.</p>
     </div>
 
-    <!-- ══════════════════════════════════════════════════════
-         BURBUJAS FLOTANTES DE ACCIÓN RÁPIDA
-         ══════════════════════════════════════════════════════ -->
-    <div class="quick-bubbles quick-bubbles-left" aria-hidden="true">
-        <div class="bubble bubble-decor"><i class="ph-fill ph-graduation-cap"></i></div>
-        <div class="bubble bubble-decor"><i class="ph-fill ph-lightbulb"></i></div>
-        <div class="bubble bubble-decor"><i class="ph-fill ph-book-open"></i></div>
+    <!-- BURBUJAS FLOTANTES Claymórficas (NUEVO/ACTUALIZADO) -->
+    <div class="quick-bubbles quick-bubbles-left" aria-label="Menú rápido de navegación">
+        <!-- 1. Enlace directo a Facebook UT de la Costa -->
+        <a href="https://www.facebook.com/UTdelaCosta/" target="_blank" rel="noopener noreferrer" class="bubble bubble-decor clay-bubble" title="Facebook UT de la Costa">
+            <i class="ph-fill ph-graduation-cap"></i>
+        </a>
+
+        <!-- 2. Ícono de libro con desplegable interactivo de integrantes y roles jerárquicos -->
+        <div class="bubble bubble-decor clay-bubble team-bubble-wrapper" tabindex="0" title="Integrantes del Equipo">
+            <i class="ph-fill ph-book-open"></i>
+            <div class="team-dropdown clay-card">
+                <h4><i class="ph-fill ph-users-three"></i> Equipo de Trabajo</h4>
+                <ul class="team-roles-list">
+                    <li>
+                        <span class="role-badge leader">Devs</span>
+                        <div class="member-info">
+                            <strong>-Adrian Huerta</strong>
+                            <strong>-Oliver Mata</strong>
+                            <small>Desarrolladores / Creadores de Contenido</small>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="role-badge research">Editor</span>
+                        <div class="member-info">
+                            <strong>-Felipe Altamirano</strong>
+                            <small>Editor Final / Revisor de Calidad</small>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="role-badge editor">Investigador</span>
+                        <div class="member-info">
+                            <strong>-Carlos Gomez</strong>
+                            <small>Investigador / Documentador</small>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <main class="page">
 
         <section id="view-input" class="view active">
             <div class="hero-band">
-                <h1>FLASHCARDS <span>QUE SÍ SE ESCUCHAN</span></h1>
-                <p>Conocimiento que se estudia, se escucha y se dice en voz alta.</p>
+                <h1>FLASHCARDS <span>¡APRENDE MÁS RÁPIDO!</span></h1>
+                <p>Crea, escucha y repasa tus lecciones al estilo Duolingo.</p>
             </div>
 
-            <div class="content-card">
+            <div class="content-card clay-card">
 
-                <div class="format-pill">
+                <div class="format-pill clay-pill">
                     <i class="ph-fill ph-info"></i>
                     Formato por línea: <strong>Pregunta&nbsp;:&nbsp;Respuesta</strong>
                 </div>
 
                 <div class="instructions-accordion">
-                    <button class="accordion-btn" id="instructions-toggle" tabindex="0">
+                    <button class="accordion-btn clay-btn-ghost" id="instructions-toggle" tabindex="0">
                         <span><i class="ph ph-question"></i> Modos de uso y teclado</span>
                         <i class="ph ph-caret-down caret"></i>
                     </button>
                     <div class="accordion-content" id="instructions-content">
                         <div class="instructions-grid">
-                            <div class="instruction-block">
+                            <div class="instruction-block clay-inset">
                                 <h4><i class="ph ph-magic-wand"></i> Flujo rápido con IA</h4>
                                 <ol>
                                     <li>Copia el prompt con el botón.</li>
                                     <li>Abre tu IA con los enlaces rápidos.</li>
-                                    <li>Vuelve rápido con <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> (o <kbd>Cmd</kbd> en Mac).</li>
+                                    <li>Vuelve rápido con <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd>.</li>
                                     <li>Pega el texto directamente.</li>
                                 </ol>
                             </div>
-                            <div class="instruction-block">
+                            <div class="instruction-block clay-inset">
                                 <h4><i class="ph ph-keyboard"></i> Atajos de teclado</h4>
                                 <ul>
                                     <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : Generar tarjetas.</li>
-                                    <li><kbd>Tab</kbd> : Navegar entre tarjetas y botones.</li>
-                                    <li><kbd>Enter</kbd> o <kbd>Esp</kbd> : Voltear tarjeta.</li>
+                                    <li><kbd>Tab</kbd> : Navegar elementos.</li>
+                                    <li><kbd>Enter</kbd> / <kbd>Esp</kbd> : Voltear tarjeta.</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="ai-box">
+                <div class="ai-box clay-card-sub">
                     <div class="ai-box-title">
                         <i class="ph-fill ph-robot"></i>
                         <span>Genera rápido con IA</span>
                     </div>
                     <p class="ai-hint">Copia el prompt → pégalo en ChatGPT, Gemini o Claude → pega el resultado abajo.</p>
-                    <div class="prompt-row">
-                        <code id="ai-prompt-text">Genera 10 flashcards sobre [TU TEMA O LO QUE DESEAS ESTUDIAR] para estudiar. Devuelve únicamente el texto usando estrictamente este formato por línea: Pregunta : Respuesta. No incliquas números, viñetas, ni texto adicional.</code>
-                        <button id="copy-prompt-btn" class="copy-btn" title="Copiar prompt" tabindex="0">
+                    <div class="prompt-row clay-inset">
+                        <code id="ai-prompt-text">Genera 10 flashcards sobre [TU TEMA O LO QUE DESEAS ESTUDIAR] para estudiar. Devuelve únicamente el texto usando strictly este formato por línea: Pregunta : Respuesta. No incluyas números, viñetas, ni texto adicional.</code>
+                        <button id="copy-prompt-btn" class="copy-btn clay-btn-icon" title="Copiar prompt" tabindex="0">
                             <i class="ph ph-copy"></i>
                         </button>
                     </div>
 
                     <div class="ai-links">
-                        <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
+                        <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn clay-btn-sm" tabindex="0">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="#10A37F" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2057 5.9847 5.9847 0 0 0 3.998-2.9001 6.0557 6.0557 0 0 0-.7478-7.0731zM13.0604 22.0147c-2.02 0-3.8058-1.1278-4.7061-2.8252l4.0886-2.3591v-4.7118l4.0818 2.3564v4.7182c0 1.5583-1.5724 2.8215-3.4643 2.8215zm-9.3516-7.8546a3.916 3.916 0 0 1 .5216-3.8641l4.0886 2.36v4.716l-4.0833 2.3577-2.0416-1.1788a3.9216 3.9216 0 0 1 1.5147-4.3908zm11.233-5.5901-4.0819-2.3565 2.0417-1.1789a3.916 3.916 0 0 1 3.8687.5255 3.9174 3.9174 0 0 1 1.5146 4.389l-2.0417-1.179v-2.3565h-1.3014zm-5.4674-4.8398c2.0199 0 3.8058 1.1279 4.7061 2.8252l-4.0886 2.3592v4.7117L6.01 11.309V6.5909c0-1.5583 1.5724-2.8216 3.4643-2.8216zm-5.3218 6.4746 4.0819 2.3564-2.0417 1.179a3.916 3.916 0 0 1-3.8687-.5256 3.9174 3.9174 0 0 1-1.5146-4.389l2.0417 1.1789v2.3565h1.3014zm13.167 2.94-4.0886-2.36v-4.7161l4.0833-2.3577 2.0416 1.1789a3.9216 3.9216 0 0 1-1.5147 4.3908l-.5216.5218v3.3423zM12 14.5369a2.31 2.31 0 0 1-2.308-2.308A2.31 2.31 0 0 1 12 9.921a2.31 2.31 0 0 1 2.308 2.308A2.31 2.31 0 0 1 12 14.5369z"/>
                             </svg>
                             ChatGPT
                         </a>
-                        <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
-                            <defs>
-                                <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="#4285f4"/>
-                                    <stop offset="50%" stop-color="#9b72cb"/>
-                                    <stop offset="100%" stop-color="#d96570"/>
-                                </linearGradient>
-                            </defs>
-                            <path fill="url(#geminiGrad)" d="M12.01 2.023c.319 5.253 4.542 9.475 9.796 9.794-5.254.319-9.477 4.542-9.796 9.795-.319-5.253-4.542-9.476-9.796-9.795 5.254-.319 9.477-4.542 9.796-9.794Z"/>
+                        <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn clay-btn-sm" tabindex="0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#1b87ea"/>
+                                        <stop offset="50%" stop-color="#7e42d9"/>
+                                        <stop offset="100%" stop-color="#e2536c"/>
+                                    </linearGradient>
+                                </defs>
+                                <path fill="url(#geminiGrad)" d="M12.01 2.023c.319 5.253 4.542 9.475 9.796 9.794-5.254.319-9.477 4.542-9.796 9.795-.319-5.253-4.542-9.476-9.796-9.795 5.254-.319 9.477-4.542 9.796-9.794Z"/>
                             </svg>
                             Gemini
                         </a>
-                        <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer" class="ai-link-btn" tabindex="0">
+                        <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer" class="ai-link-btn clay-btn-sm" tabindex="0">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="#D97757" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M21.2 21.5h2.8L13.5 2.5h-3L0 21.5h2.9l2.7-5.4h12.8l2.8 5.4ZM7 13.7l5-10.1 5 10.1H7Z"/>
                             </svg>
@@ -215,66 +254,66 @@
                 </div>
 
                 <div class="textarea-wrap">
-                    <textarea id="text-input" placeholder="Pega el resultado de tu IA aquí, o escribe tus tarjetas a mano…&#10;&#10;Ejemplo:&#10;Capital de Francia : París&#10;Fórmula del agua : H₂O"></textarea>
-                    <button id="dictate-btn" class="dictate-btn" type="button" title="Dictar por voz (habla y se escribirá el texto)">
+                    <textarea id="text-input" class="clay-textarea" placeholder="Pega tus tarjetas aquí o escríbelas a mano…&#10;&#10;Ejemplo:&#10;Capital de Francia : París&#10;Fórmula del agua : H₂O"></textarea>
+                    <button id="dictate-btn" class="dictate-btn clay-btn-float" type="button" title="Dictar por voz">
                         <i class="ph ph-microphone"></i>
                     </button>
                 </div>
-                <p id="dictate-status" class="dictate-status hidden" role="status"></p>
+                <p id="dictate-status" class="dictate-status clay-pill hidden" role="status"></p>
 
-                <button id="generate-btn" class="btn-primary">
+                <button id="generate-btn" class="btn-primary clay-btn clay-btn-green full">
                     <i class="ph-fill ph-magic-wand"></i>
                     Generar tarjetas
                 </button>
 
-                <p class="voice-tip">
+                <p class="voice-tip clay-inset">
                     <i class="ph-fill ph-hand-pointing"></i>
-                    ¿Te cuesta leer? Pulsa <i class="ph ph-microphone"></i> para dictar tus tarjetas hablando, o activa <strong>"Leer en voz alta"</strong> en el menú para que la página te lea todo.
+                    ¿Te cuesta leer? Pulsa <i class="ph ph-microphone"></i> para dictar o activa <strong>"Leer en voz alta"</strong> en el menú.
                 </p>
             </div>
         </section>
 
         <section id="view-study" class="view hidden">
-            <div class="content-card">
+            <div class="content-card clay-card">
                 <div class="study-bar">
                     <div class="bar-left">
-                        <button id="back-btn" class="btn-secondary">
+                        <button id="back-btn" class="btn-secondary clay-btn clay-btn-grey">
                             <i class="ph ph-arrow-left"></i> Volver
                         </button>
-                        <span id="card-counter" class="badge">0 Tarjetas</span>
+                        <span id="card-counter" class="badge clay-badge">0 Tarjetas</span>
                     </div>
-                    <button id="start-practice-btn" class="btn-accent">
+                    <button id="start-practice-btn" class="btn-accent clay-btn clay-btn-blue">
                         <i class="ph-fill ph-play-circle"></i> Practicar quiz
                     </button>
                 </div>
-                <p class="voice-tip small">
-                    <i class="ph-fill ph-speaker-high"></i> Toca el altavoz de cada tarjeta para escuchar la pregunta y la respuesta.
+                <p class="voice-tip small clay-inset">
+                    <i class="ph-fill ph-speaker-high"></i> Toca el altavoz de cada tarjeta para escucharla.
                 </p>
                 <div id="flashcards-container" class="cards-grid"></div>
             </div>
         </section>
 
         <section id="view-practice" class="view hidden">
-            <div class="quiz-card">
+            <div class="quiz-card clay-card">
                 <div class="quiz-header">
-                    <button id="exit-practice-btn" class="btn-secondary small">
+                    <button id="exit-practice-btn" class="btn-secondary small clay-btn-grey">
                         <i class="ph ph-x"></i> Salir
                     </button>
-                    <span id="practice-progress" class="badge">1 / 5</span>
+                    <span id="practice-progress" class="badge clay-badge">1 / 5</span>
                 </div>
                 <div class="question-row">
                     <h2 id="practice-question">¿Cargando pregunta?</h2>
-                    <button id="listen-question-btn" class="listen-btn" type="button" title="Escuchar la pregunta">
+                    <button id="listen-question-btn" class="listen-btn clay-btn-icon" type="button" title="Escuchar la pregunta">
                         <i class="ph ph-speaker-high"></i>
                     </button>
                 </div>
                 <div id="mc-options" class="mc-grid"></div>
                 <p id="feedback-message" class="feedback"></p>
                 <div class="quiz-actions">
-                    <button id="skip-btn" class="btn-skip">
+                    <button id="skip-btn" class="btn-skip clay-btn clay-btn-outline">
                         <i class="ph ph-skip-forward"></i> Saltar
                     </button>
-                    <button id="next-btn" class="btn-next hidden">
+                    <button id="next-btn" class="btn-next clay-btn clay-btn-green hidden">
                         Siguiente <i class="ph ph-arrow-right"></i>
                     </button>
                 </div>
@@ -282,21 +321,21 @@
         </section>
 
         <section id="view-results" class="view hidden">
-            <div class="content-card">
+            <div class="content-card clay-card">
                 <div class="results-layout">
-                    <div class="results-left">
+                    <div class="results-left clay-card-sub">
                         <div class="results-title-row">
                             <h2>Resultados</h2>
-                            <button id="listen-results-btn" class="listen-btn" type="button" title="Escuchar resultados">
+                            <button id="listen-results-btn" class="listen-btn clay-btn-icon" type="button" title="Escuchar resultados">
                                 <i class="ph ph-speaker-high"></i>
                             </button>
                         </div>
-                        <div class="score-ring">
+                        <div class="score-ring clay-ring">
                             <svg viewBox="0 0 100 100">
                                 <defs>
-                                    <linearGradient id="ringGradient" x1="10" y1="10" x2="90" y2="90" gradientUnits="userSpaceOnUse">
-                                        <stop offset="0%" stop-color="#0f6b4c"/>
-                                        <stop offset="100%" stop-color="#37b07f"/>
+                                    <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#58cc02"/>
+                                        <stop offset="100%" stop-color="#23a100"/>
                                     </linearGradient>
                                 </defs>
                                 <circle class="ring-track" cx="50" cy="50" r="40"/>
@@ -308,11 +347,11 @@
                             </div>
                         </div>
                         <div class="stat-row">
-                            <div class="stat-chip correct-chip"><span id="stat-correct">0</span><p>Correctas</p></div>
-                            <div class="stat-chip wrong-chip"><span id="stat-wrong">0</span><p>Incorrectas</p></div>
-                            <div class="stat-chip skip-chip"><span id="stat-skipped">0</span><p>Saltadas</p></div>
+                            <div class="stat-chip correct-chip clay-chip-green"><span id="stat-correct">0</span><p>Correctas</p></div>
+                            <div class="stat-chip wrong-chip clay-chip-red"><span id="stat-wrong">0</span><p>Incorrectas</p></div>
+                            <div class="stat-chip skip-chip clay-chip-yellow"><span id="stat-skipped">0</span><p>Saltadas</p></div>
                         </div>
-                        <button id="retry-btn" class="btn-primary full">
+                        <button id="retry-btn" class="btn-primary full clay-btn clay-btn-green">
                             <i class="ph ph-arrows-counter-clockwise"></i> Volver a estudiar
                         </button>
                     </div>
