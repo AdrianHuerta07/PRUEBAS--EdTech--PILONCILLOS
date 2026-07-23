@@ -734,3 +734,120 @@ body.dark-mode .night-text { display: block; }
 body.dark-mode .team-dropdown h4 { border-bottom-color: #2b364f; }
 body.dark-mode .member-info strong { color: #ffffff; }
 body.dark-mode .member-info small { color: #a0aec0; }
+
+/* ============================================================
+   AJUSTES RESPONSIVOS PARA MÓVIL (PANTALLAS SMALL/MOBILE)
+   ============================================================ */
+
+@media (max-width: 768px) {
+    /* 1. Header más compacto */
+    .site-header-inner {
+        padding: 0 0.8rem;
+    }
+
+    .brand-mark.clay-badge-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+
+    .brand-name {
+        font-size: 1.1rem;
+    }
+
+    .brand-sub {
+        font-size: 0.65rem;
+    }
+
+    /* Reducción sutil del botón switch en móvil */
+    .switch-track {
+        width: 86px;
+        height: 34px;
+    }
+
+    .switch-thumb {
+        width: 28px;
+        height: 28px;
+        left: calc(100% - 31px);
+    }
+
+    .switch-text {
+        font-size: 0.52rem;
+    }
+
+    .day-text { left: 12px; }
+    .night-text { right: 10px; }
+
+    body.dark-mode .switch-thumb {
+        transform: translateX(-52px);
+    }
+
+    /* 2. Hero Band y Tipografía Responsiva */
+    .hero-band h1 {
+        font-size: 1.4rem;
+        line-height: 1.2;
+    }
+
+    .hero-band p {
+        font-size: 0.9rem;
+    }
+
+    .content-card {
+        padding: 1.2rem;
+    }
+
+    /* 3. Textarea e Input flotantes */
+    .clay-textarea {
+        height: 140px;
+        font-size: 0.95rem;
+        padding: 0.8rem 3rem 0.8rem 0.9rem;
+    }
+
+    .clay-btn-float {
+        width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+    }
+
+    /* 4. Reposicionamiento Inteligente de Burbujas Flotantes (Redes / Créditos) */
+    .quick-bubbles {
+        display: flex !important; /* Habilitar en móvil */
+        position: fixed;
+        left: auto;
+        right: 1rem;
+        top: auto;
+        bottom: 1.2rem;
+        flex-direction: row;
+        z-index: 99;
+    }
+
+    .clay-bubble {
+        width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+    }
+
+    /* Desplegable de integrantes en móvil (abre hacia arriba/izquierda) */
+    .team-dropdown {
+        left: auto;
+        right: 0;
+        top: auto;
+        bottom: 50px;
+        width: 260px;
+    }
+
+    /* 5. Tarjetas / Flashcards en grid móvil */
+    .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 0.8rem;
+    }
+
+    .card-container {
+        height: 140px;
+    }
+
+    .card-face {
+        font-size: 0.9rem;
+        padding: 0.8rem;
+    }
+}

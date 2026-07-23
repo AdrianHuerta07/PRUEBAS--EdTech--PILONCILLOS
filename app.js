@@ -1,6 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ══════════════════════════════════════════════════════════
+    // MÓDULO RESPONSIVO PARA DISPOSITIVOS TÁCTILES / MÓVILES
+    // ══════════════════════════════════════════════════════════
+    (function setupMobileAdaptations() {
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            // Oculta el bloque de instrucciones de atajos de teclado si es un móvil/táctil
+            const keyboardBlock = document.querySelector('.instruction-block:nth-child(2)');
+            if (keyboardBlock) {
+                keyboardBlock.style.display = 'none';
+            }
+        }
+    })();
+
+    // ══════════════════════════════════════════════════════════
     // MÓDULO CONTROL MODO OSCURO (DAY / NIGHT SWITCH)
     // ══════════════════════════════════════════════════════════
     (function setupThemeToggle() {
