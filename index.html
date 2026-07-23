@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashcards | Piloncillos</title>
-    <link rel="stylesheet" href="styles.css">
+    
+    <!-- 1. ANTICACHÉ: Obliga al navegador a validar la versión más reciente -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- 2. CACHE BUSTING EN CSS: Incrementa el número (?v=1.0.1) cada vez que subas cambios -->
+    <link rel="stylesheet" href="styles.css?v=1.0.1">
     
     <!-- Google Fonts optimizado para estilo Duolingo (Feather / Nunito) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,6 +23,9 @@
     <!-- PWA: instalable y offline -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#58cc02">
+    
+    <!-- 3. CACHE BUSTING EN JS (Si agregas tu script aquí al final): -->
+    <!-- <script src="app.js?v=1.0.1" defer></script> -->
 </head>
 <body class="clay-bg">
 
@@ -173,7 +183,7 @@
         <section id="view-input" class="view active">
             <div class="hero-band">
                 <h1>FLASHCARDS <span>¡APRENDE MÁS RÁPIDO!</span></h1>
-                <p>Crea, escucha y repasa tus lecciones al estilo Duolingo.</p>
+                <p>Crea, escucha y repasa tus lecciones.</p>
             </div>
 
             <div class="content-card clay-card">
