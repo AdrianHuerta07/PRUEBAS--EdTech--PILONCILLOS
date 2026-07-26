@@ -626,12 +626,56 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Generador auxiliar de distractores dinámicos
+    function generateDistractors(correctAnswer, cardPool) {
+        const generated = new Set();
+        const cleanAnswer = correctAnswer.trim();
+
+        // 1. Variaciones por reglas gramaticales y modales
+        if (/^(es|son|un|una|el|la|los|las)\b/i.test(cleanAnswer)) {
+            generated.add(cleanAnswer.replace(/^(es|son)\b/i, "No $1"));
+            generated.add(`Parcialmente ${cleanAnswer.toLowerCase()}`);
+        } else {
+            generated.add(`No ${cleanAnswer.charAt(0).toLowerCase() + cleanAnswer.slice(1)}`);
+            generated.add(`Únicamente en casos especiales: ${cleanAnswer.toLowerCase()}`);
+        }
+
+        // 2. Modificación de valores numéricos si existen en la respuesta
+        if (/\d+/.test(cleanAnswer)) {
+            const alteredNum = cleanAnswer.replace(/\d+/g, (n) => {
+                const val = parseInt(n, 10);
+                return val > 10 ? val + (Math.random() > 0.5 ? 1 : -1) : val * 2;
+            });
+            if (alteredNum !== cleanAnswer) generated.add(alteredNum);
+        }
+
+        // 3. Tomar respuestas reales de otras tarjetas del usuario
+        const otherAnswers = cardPool
+            .map(c => c.a)
+            .filter(a => a !== correctAnswer)
+            .sort(() => 0.5 - Math.random());
+
+        otherAnswers.forEach(ans => generated.add(ans));
+
+        // 4. Plantillas conceptuales de respaldo
+        const templates = [
+            `Proceso inverso a ${cleanAnswer.toLowerCase()}`,
+            `Aplicable solo fuera del contexto estándar de ${cleanAnswer.toLowerCase()}`,
+            `Definición alternativa no relacionada con ${cleanAnswer.toLowerCase()}`
+        ];
+        templates.forEach(t => generated.add(t));
+
+        // Filtrar respuesta idéntica y obtener 3 distractores
+        return Array.from(generated)
+            .filter(d => d.trim().toLowerCase() !== cleanAnswer.toLowerCase())
+            .slice(0, 3);
+    }
+
     function buildOptions(card) {
-        const distractors = [...new Set(allCards.map(c => c.a).filter(a => a !== card.a))];
-        distractors.sort(() => 0.5 - Math.random());
+        const distractors = generateDistractors(card.a, allCards);
+        const options = [...distractors, card.a].sort(() => 0.5 - Math.random());
 
-        const options = [...distractors.slice(0, 3), card.a].sort(() => 0.5 - Math.random());
-
+        mcOptionsContainer.innerHTML = '';
         options.forEach(text => {
             const btn       = document.createElement('button');
             btn.className   = 'mc-option';
