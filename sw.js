@@ -1,4 +1,4 @@
-const CACHE_NAME = 'piloncillos-flashcards-v16';
+const CACHE_NAME = 'piloncillos-flashcards-v17';
 
 // Recursos esenciales para el funcionamiento Offline de la App
 const ASSETS_TO_CACHE = [
@@ -7,7 +7,7 @@ const ASSETS_TO_CACHE = [
   './styles.css?v=1.0.2',
   './app.js?v=1.0.2',
   './manifest.json',
-  './icon.svg',
+  './icon.jpeg',
   // CDNs externos para asegurar carga sin conexión tras la primera visita
   'https://unpkg.com/@phosphor-icons/web',
   'https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800&family=Feather:wght@700;800;900&display=swap',
