@@ -1,4 +1,4 @@
-const CACHE_NAME = 'piloncillos-flashcards-v20';
+const CACHE_NAME = 'piloncillos-flashcards-v21';
 
 // Recursos locales indispensables
 const LOCAL_ASSETS = [
@@ -44,14 +44,13 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// 3. Estrategia de Red / Caché corregida para CDNs
+// 3. Estrategia de Red / Caché para CDNs
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        // Acepta respuestas normales (basic) y de CDNs externos (cors / opaque)
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
