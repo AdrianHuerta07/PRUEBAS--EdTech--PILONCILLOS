@@ -984,3 +984,22 @@ body.dark-mode .member-info small { color: #a0aec0; }
         grid-template-columns: 1fr 1fr;
     }
 }
+
+/* ============================================================
+   ESTILOS PARA EL LOGO DEL DRAGÓN (icon.jpeg)
+   ============================================================ */
+
+.dragon-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Adapta la imagen recortándola si es necesario para llenar el círculo */
+    border-radius: 50%; /* Hace la imagen circular */
+    display: block;
+}
+
+.clay-header .brand-mark.clay-badge-icon,
+.login-brand .brand-mark.clay-badge-icon {
+    overflow: hidden;
+    padding: 0; /* Elimina márgenes internos para que la foto ocupe todo el distintivo */
+    background: transparent;
+}

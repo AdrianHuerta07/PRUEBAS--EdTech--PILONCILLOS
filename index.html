@@ -1,26 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ... (resto de tu head actual se mantiene igual) ... -->
     <title>Flashcards | Piloncillos</title>
     
-    <!-- 1. ANTICACHÉ: Obliga al navegador a validar la versión más reciente -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-
-    <!-- 2. CACHE BUSTING EN CSS -->
+    <!-- Mantenemos las hojas de estilo existentes -->
     <link rel="stylesheet" href="styles.css?v=1.0.2">
     
-    <!-- Google Fonts optimizado para estilo Duolingo (Feather / Nunito) -->
+    <!-- Google Fonts y Phosphor Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,600;0,700;0,800;0,900;1,700;1,800&family=Feather:wght@700;800;900&display=swap" rel="stylesheet">
-    
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- PWA: instalable y offline -->
+    <!-- PWA y color de tema -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#58cc02">
 </head>
@@ -30,13 +23,14 @@
     <div id="aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <!-- ══════════════════════════════════════════════════════
-         PANTALLA DE LOGIN
+         PANTALLA DE LOGIN (MODIFICADA)
          ══════════════════════════════════════════════════════ -->
     <div id="login-screen" class="login-screen">
         <div class="login-card clay-card">
             <div class="login-brand">
+                <!-- MODIFICACIÓN: Imagen "icon.jpeg" -->
                 <div class="brand-mark clay-badge-icon" aria-hidden="true">
-                    <i class="ph-fill ph-cards"></i>
+                    <img src="icon.jpg" alt="Logo Dragón" class="dragon-logo-img">
                 </div>
                 <h1>Flashcards</h1>
                 <p class="duo-sub">Equipo Piloncillos</p>
@@ -69,22 +63,24 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════
-         CONTENIDO DE LA APP
+         CONTENIDO DE LA APP (MODIFICADO)
          ══════════════════════════════════════════════════════ -->
     <div id="app-content" class="hidden">
 
-    <!-- HEADER INSTITUCIONAL -->
+    <!-- HEADER INSTITUCIONAL (MODIFICADO) -->
     <header class="site-header clay-header">
         <div class="site-header-inner">
             <div class="brand">
+                <!-- MODIFICACIÓN: Imagen "icon.jpeg" -->
                 <div class="brand-mark clay-badge-icon" aria-hidden="true">
-                    <i class="ph-fill ph-cards"></i>
+                    <img src="icon.jpg" alt="Logo Dragón" class="dragon-logo-img">
                 </div>
                 <div class="brand-text">
                     <span class="brand-name">Flashcards</span>
                     <span class="brand-sub">Equipo Piloncillos</span>
                 </div>
             </div>
+            
             <div class="header-actions">
                 <button id="theme-toggle" class="theme-switch" type="button" aria-label="Cambiar modo oscuro">
                     <span class="switch-track">
@@ -381,7 +377,6 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {
-                    // Forzar comprobación de cambios en el SW cada vez que cargue la app
                     reg.update();
                 }).catch(err => {
                     console.warn('No se pudo registrar el Service Worker:', err);
