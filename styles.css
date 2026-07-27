@@ -555,7 +555,6 @@ body.clay-bg {
 .quick-bubbles { position: fixed; left: 1rem; top: 40%; display: flex; flex-direction: column; gap: 0.8rem; z-index: 10; }
 .clay-bubble { width: 48px; height: 48px; flex-shrink: 0; border-radius: 50%; background: #fff; border: 2px solid var(--duo-grey); box-shadow: var(--clay-shadow-outer); display: flex; align-items: center; justify-content: center; color: var(--duo-blue); font-size: 1.3rem; }
 
-
 /* ============================================================
    ESTILOS INTERRUPTOR MODO OSCURO (DAY / NIGHT SWITCH)
    ============================================================ */
