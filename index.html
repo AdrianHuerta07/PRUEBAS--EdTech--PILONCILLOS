@@ -10,8 +10,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <!-- 2. CACHE BUSTING EN CSS: Incrementa el número (?v=1.0.1) cada vez que subas cambios -->
-    <link rel="stylesheet" href="styles.css?v=1.0.1">
+    <!-- 2. CACHE BUSTING EN CSS -->
+    <link rel="stylesheet" href="styles.css?v=1.0.2">
     
     <!-- Google Fonts optimizado para estilo Duolingo (Feather / Nunito) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,9 +23,6 @@
     <!-- PWA: instalable y offline -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#58cc02">
-    
-    <!-- 3. CACHE BUSTING EN JS (Si agregas tu script aquí al final): -->
-    <!-- <script src="app.js?v=1.0.1" defer></script> -->
 </head>
 <body class="clay-bg">
 
@@ -33,7 +30,7 @@
     <div id="aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <!-- ══════════════════════════════════════════════════════
-         PANTALLA DE LOGIN (Estilo Claymorfismo Duolingo)
+         PANTALLA DE LOGIN
          ══════════════════════════════════════════════════════ -->
     <div id="login-screen" class="login-screen">
         <div class="login-card clay-card">
@@ -89,7 +86,6 @@
                 </div>
             </div>
             <div class="header-actions">
-                <!-- Interruptor Modo Claro / Modo Oscuro estilo imagen -->
                 <button id="theme-toggle" class="theme-switch" type="button" aria-label="Cambiar modo oscuro">
                     <span class="switch-track">
                         <span class="switch-thumb">
@@ -138,14 +134,12 @@
         <p class="voice-settings-hint"><i class="ph ph-info"></i> Toca cualquier tarjeta o pregunta con el icono <i class="ph ph-speaker-high"></i> para escucharla.</p>
     </div>
 
-    <!-- BURBUJAS FLOTANTES Claymórficas (NUEVO/ACTUALIZADO) -->
+    <!-- BURBUJAS FLOTANTES -->
     <div class="quick-bubbles quick-bubbles-left" aria-label="Menú rápido de navegación">
-        <!-- 1. Enlace directo a Facebook UT de la Costa -->
         <a href="https://www.facebook.com/UTdelaCosta/" target="_blank" rel="noopener noreferrer" class="bubble bubble-decor clay-bubble" title="Facebook UT de la Costa">
             <i class="ph-fill ph-graduation-cap"></i>
         </a>
 
-        <!-- 2. Ícono de libro con desplegable interactivo de integrantes y roles jerárquicos -->
         <div class="bubble bubble-decor clay-bubble team-bubble-wrapper" tabindex="0" title="Integrantes del Equipo">
             <i class="ph-fill ph-book-open"></i>
             <div class="team-dropdown clay-card">
@@ -228,7 +222,7 @@
                     </div>
                     <p class="ai-hint">Copia el prompt → pégalo en ChatGPT, Gemini o Claude → pega el resultado abajo.</p>
                     <div class="prompt-row clay-inset">
-                        <code id="ai-prompt-text">Genera 10 flashcards sobre [TU TEMA] para estudiar. Devuelve únicamente el texto usando estrictamente este formato por línea: Pregunta : Respuesta Correcta | Incorrecta 1 | Incorrecta 2 | Incorrecta 3. No incluyas números, viñetas, ni texto adicional.</code>
+                        <code id="ai-prompt-text">Genera 10 flashcards sobre [TU TEMA] para estudiar. Devuelve únicamente el texto usando strictly este formato por línea: Pregunta : Respuesta Correcta | Incorrecta 1 | Incorrecta 2 | Incorrecta 3. No incluyas números, viñetas, ni texto adicional.</code>
                         <button id="copy-prompt-btn" class="copy-btn clay-btn-icon" title="Copiar prompt" tabindex="0">
                             <i class="ph ph-copy"></i>
                         </button>
@@ -382,11 +376,14 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=1.0.2"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    // Forzar comprobación de cambios en el SW cada vez que cargue la app
+                    reg.update();
+                }).catch(err => {
                     console.warn('No se pudo registrar el Service Worker:', err);
                 });
             });
