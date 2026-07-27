@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ══════════════════════════════════════════════════════════
     (function setupMobileAdaptations() {
         if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+            // Oculta el bloque de instrucciones de atajos de teclado si es un móvil/táctil
             const keyboardBlock = document.querySelector('.instruction-block:nth-child(2)');
             if (keyboardBlock) {
                 keyboardBlock.style.display = 'none';
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const themeToggleBtn = document.getElementById('theme-toggle');
         const THEME_KEY = 'piloncillos_theme_preference';
 
+        // Cargar preferencia guardada o detectar preferencia del sistema
         const savedTheme = localStorage.getItem(THEME_KEY);
         const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -31,8 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.classList.toggle('dark-mode');
                 const isDark = document.body.classList.contains('dark-mode');
                 
+                // Guardar estado en LocalStorage
                 localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
                 
+                // Anuncio de accesibilidad
                 if (typeof VoiceA11y !== 'undefined' && VoiceA11y.announce) {
                     VoiceA11y.announce(`Modo ${isDark ? 'oscuro' : 'claro'} activado`);
                 }
@@ -55,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const passwordInput = document.getElementById('login-password');
         const loginError   = document.getElementById('login-error');
         const loginErrorText = document.getElementById('login-error-text');
+        const togglePwdBtn  = document.getElementById('toggle-password');
         const logoutBtn     = document.getElementById('logout-btn');
 
         function showApp() {
@@ -109,6 +114,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     passwordInput.value = '';
                     passwordInput.focus();
                 }
+            });
+        }
+
+        if (togglePwdBtn) {
+            togglePwdBtn.addEventListener('click', () => {
+                const isPwd = passwordInput.type === 'password';
+                passwordInput.type = isPwd ? 'text' : 'password';
+                togglePwdBtn.innerHTML = isPwd
+                    ? '<i class="ph ph-eye-slash"></i>'
+                    : '<i class="ph ph-eye"></i>';
             });
         }
 

@@ -1,6 +1,7 @@
 /* ============================================================
    PILONCILLOS FLASHCARDS · THEME
-   Combinación de estética educativa con Claymorfismo 3D
+   Combinación de estética educativa con
+   Claymorfismo 3D (sombras infladas de arcilla y relieves suaves).
    ============================================================ */
 
 :root {
@@ -21,7 +22,7 @@
     --clay-bg: #eef6f0;
     --clay-surface: #ffffff;
     
-    /* Sombras Claymórficas 3D */
+    /* Sombras Claymórficas 3D (Arcilla suave inflada) */
     --clay-shadow-outer: 12px 12px 24px #cbd8ce, -12px -12px 24px #ffffff;
     --clay-shadow-card: 16px 16px 32px #c5d4c8, -16px -16px 32px #ffffff;
     --clay-shadow-inset: inset 4px 4px 8px #d1dfd4, inset -4px -4px 8px #ffffff;
@@ -43,6 +44,7 @@
 html {
     width: 100%;
     max-width: 100vw;
+    /* Bloquea la recarga (pull-to-refresh) a nivel de la raíz */
     overscroll-behavior-y: none;
 }
 
@@ -50,6 +52,7 @@ body.clay-bg {
     font-family: var(--font-main);
     background-color: var(--clay-bg);
     color: var(--duo-dark-text);
+    /* Se usa min-height inteligente que se adapta a las barras del navegador móvil */
     min-height: 100dvh; 
     width: 100%;
     max-width: 100vw;
@@ -57,6 +60,8 @@ body.clay-bg {
     flex-direction: column;
     position: relative;
     transition: background-color 0.3s ease, color 0.3s ease;
+    
+    /* Permite el scroll vertical sin restricciones */
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -93,7 +98,7 @@ body.clay-bg {
     padding: 0.9rem 1.1rem;
 }
 
-/* ── Botones Estilo 3D ── */
+/* ── Botones Estilo 3D (Clay + Press Effect) ── */
 
 .clay-btn {
     border: none;
@@ -413,7 +418,7 @@ body.clay-bg {
 }
 .clay-textarea:focus { border-color: var(--duo-green); }
 
-/* ── Estudio / Flashcards (OPTIMIZADO RESPONSIVO) ── */
+/* ── Estudio / Flashcards ──────────────────────────────── */
 
 .study-bar { 
     display: flex; 
@@ -435,18 +440,17 @@ body.clay-bg {
     width: 100%;
 }
 
-.card-container { perspective: 1000px; min-height: 170px; height: auto; cursor: pointer; width: 100%; }
-.card { width: 100%; height: 100%; min-height: 170px; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease; }
+.card-container { perspective: 1000px; height: 160px; cursor: pointer; width: 100%; }
+.card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease; }
 .card.is-flipped { transform: rotateY(180deg); }
 
 .card-face {
     position: absolute; inset: 0; backface-visibility: hidden;
     border-radius: var(--r-lg); padding: 1.2rem; text-align: center;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 0.95rem; color: var(--duo-dark-text);
+    font-weight: 800; font-size: 1rem; color: var(--duo-dark-text);
     background: #ffffff; border: 3px solid var(--duo-grey);
     box-shadow: 0 8px 0 var(--duo-grey-shadow), var(--clay-shadow-outer);
-    word-break: break-word; overflow-y: auto;
 }
 
 .card-back {
@@ -460,15 +464,15 @@ body.clay-bg {
     width: 32px; height: 32px; border-radius: 50%;
     background: #fff; border: 2px solid var(--duo-grey);
     color: var(--duo-blue); display: flex; align-items: center; justify-content: center;
-    cursor: pointer; z-index: 5;
+    cursor: pointer;
 }
 
-/* ── Quiz / Práctica (OPTIMIZADO RESPONSIVO) ── */
+/* ── Quiz / Práctica ────────────────────────────────────── */
 
-.quiz-card { max-width: 680px; margin: 0 auto; width: 100%; padding: 1.5rem; }
+.quiz-card { max-width: 680px; margin: 0 auto; width: 100%; }
 .quiz-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--duo-grey); padding-bottom: 0.8rem; width: 100%; gap: 0.5rem; }
 .question-row { display: flex; align-items: center; gap: 0.8rem; margin: 1.5rem 0; width: 100%; }
-#practice-question { font-weight: 900; font-size: 1.3rem; text-align: center; flex: 1; word-break: break-word; }
+#practice-question { font-weight: 900; font-size: 1.4rem; text-align: center; flex: 1; word-break: break-word; }
 
 .mc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; }
 
@@ -477,14 +481,13 @@ body.clay-bg {
     border: 3px solid var(--duo-grey);
     border-radius: var(--r-lg);
     box-shadow: 0 5px 0 var(--duo-grey-shadow);
-    padding: 1rem;
+    padding: 1.1rem;
     font-family: inherit;
     font-weight: 800;
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--duo-dark-text);
     cursor: pointer;
     min-height: 70px;
-    height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -492,8 +495,6 @@ body.clay-bg {
     transition: all 0.1s ease;
     width: 100%;
     word-break: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
 }
 .mc-option:hover:not(:disabled) { background: #f9f9f9; }
 .mc-option:active:not(:disabled) { transform: translateY(5px); box-shadow: 0 0 0 var(--duo-grey-shadow); }
@@ -543,7 +544,7 @@ body.clay-bg {
 
 .results-right { flex: 1.2; width: 100%; }
 .history-list { display: flex; flex-direction: column; gap: 0.8rem; max-height: 350px; overflow-y: auto; padding-right: 4px; margin-top: 0.8rem; width: 100%; }
-.history-item { background: #fff; border: 2px solid var(--duo-grey); border-radius: var(--r-md); padding: 0.8rem; font-weight: 700; font-size: 0.85rem; width: 100%; word-break: break-word; }
+.history-item { background: #fff; border: 2px solid var(--duo-grey); border-radius: var(--r-md); padding: 0.8rem; font-weight: 700; font-size: 0.85rem; width: 100%; }
 .status-tag { display: inline-block; padding: 0.2rem 0.6rem; border-radius: var(--r-pill); font-size: 0.7rem; font-weight: 900; text-transform: uppercase; margin-bottom: 0.4rem; }
 .status-tag.correct { background: #d7ffb8; color: var(--duo-green-shadow); }
 .status-tag.wrong { background: #ffdfe0; color: var(--duo-red); }
@@ -760,6 +761,18 @@ body.dark-mode .member-info small { color: #a0aec0; }
    CORRECCIÓN Y RESPONSIVIDAD DEFINITIVA PARA MÓVILES
    ============================================================ */
 
+/* Barra de acciones generales de estudio */
+.study-actions-bar {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 0.5rem !important;
+    overflow: hidden;
+}
+
 @media (max-width: 1050px) {
     .quick-bubbles { display: none; }
 }
@@ -844,36 +857,111 @@ body.dark-mode .member-info small { color: #a0aec0; }
         font-size: 1.1rem;
     }
 
-    /* Cards e interfaces de estudio (Pasa a 1 columna para evitar amontonamiento) */
+    /* Burbujas Flotantes Inferiores en Móvil */
+    .quick-bubbles {
+        display: flex !important;
+        position: fixed;
+        left: auto;
+        right: 1rem;
+        top: auto;
+        bottom: 1.2rem;
+        flex-direction: row;
+        z-index: 99;
+    }
+
+    .clay-bubble {
+        width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+    }
+
+    .team-dropdown {
+        left: auto;
+        right: 0;
+        top: auto;
+        bottom: 50px;
+        width: 260px;
+    }
+
+    .team-bubble-wrapper:hover .team-dropdown,
+    .team-bubble-wrapper:focus .team-dropdown,
+    .team-bubble-wrapper:focus-within .team-dropdown {
+        transform: translateY(0);
+    }
+
+    /* Cards e interfaces de estudio */
     .cards-grid {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
         gap: 0.8rem;
     }
 
     .card-container {
-        min-height: 140px;
-        height: auto;
+        height: 140px;
     }
 
     .card-face {
         font-size: 0.88rem;
-        padding: 1rem 0.8rem;
+        padding: 0.8rem;
     }
 
-    /* Adaptación del examen / Quiz */
+    /* Adaptación de la barra superior en pantallas pequeñas */
+    .study-bar,
+    .study-actions-bar,
+    .quiz-header {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+    }
+
+    .study-actions-bar .clay-btn, 
+    #start-practice-btn,
+    #back-btn {
+        font-size: 0.75rem !important;
+        padding: 0.5rem 0.75rem !important;
+        white-space: nowrap !important;
+        height: auto !important;
+        min-height: 38px;
+    }
+
+    .cards-badge,
+    .clay-badge {
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.65rem !important;
+        white-space: nowrap !important;
+    }
+
+    /* Quiz y Opciones */
     #practice-question {
         font-size: 1.1rem;
     }
 
     .mc-grid {
-        grid-template-columns: 1fr !important; /* Fuerza 1 sola columna en celular */
+        grid-template-columns: 1fr;
         gap: 0.75rem;
     }
 
     .mc-option {
-        padding: 0.85rem;
-        font-size: 0.88rem;
-        min-height: 52px;
+        padding: 0.8rem;
+        font-size: 0.9rem;
+        min-height: 56px;
+    }
+
+    /* Botón Salir Práctica */
+    #exit-practice-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--duo-grey);
+        border-radius: 12px;
+        color: inherit;
+        padding: 0.45rem 0.8rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+
+    body.dark-mode #exit-practice-btn {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.15);
     }
 
     /* Resultados */
@@ -890,5 +978,9 @@ body.dark-mode .member-info small { color: #a0aec0; }
 
     .brand-sub {
         display: none;
+    }
+
+    .cards-grid {
+        grid-template-columns: 1fr 1fr;
     }
 }
