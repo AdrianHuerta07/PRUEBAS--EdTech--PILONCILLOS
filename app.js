@@ -63,17 +63,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const logoutBtn     = document.getElementById('logout-btn');
 
         function showApp() {
-            if (loginScreen) loginScreen.classList.add('hidden');
-            if (appContent) appContent.classList.remove('hidden');
+            loginScreen.classList.add('hidden');
+            appContent.classList.remove('hidden');
         }
 
         function showLogin() {
-            if (appContent) appContent.classList.add('hidden');
-            if (loginScreen) loginScreen.classList.remove('hidden');
-            if (emailInput) emailInput.value = '';
-            if (passwordInput) passwordInput.value = '';
-            if (loginError) loginError.classList.add('hidden');
-            if (emailInput) emailInput.focus();
+            appContent.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            emailInput.value = '';
+            passwordInput.value = '';
+            loginError.classList.add('hidden');
+            emailInput.focus();
         }
 
         if (localStorage.getItem(SESSION_KEY) === 'true') {
@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rateInput && rateInput.addEventListener('input', () => {
             const r = parseFloat(rateInput.value);
             VoiceA11y.setRate(r);
-            if (rateVal) rateVal.textContent = `${r.toFixed(2)}×`;
+            rateVal.textContent = `${r.toFixed(2)}×`;
         });
 
         voiceSelect && voiceSelect.addEventListener('change', () => {
@@ -499,14 +499,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const instructionsToggle  = document.getElementById('instructions-toggle');
     const instructionsContent = document.getElementById('instructions-content');
 
-    if (textInput && generateBtn) {
-        textInput.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-                e.preventDefault();
-                generateBtn.click();
-            }
-        });
-    }
+    textInput.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            generateBtn.click();
+        }
+    });
 
     if (instructionsToggle && instructionsContent) {
         instructionsToggle.addEventListener('click', () => {
@@ -515,87 +513,86 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (copyPromptBtn && aiPromptText) {
-        copyPromptBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(aiPromptText.textContent.trim()).then(() => {
-                copyPromptBtn.innerHTML = '<i class="ph ph-check"></i>';
-                copyPromptBtn.classList.add('copied');
-                setTimeout(() => {
-                    copyPromptBtn.innerHTML = '<i class="ph ph-copy"></i>';
-                    copyPromptBtn.classList.remove('copied');
-                }, 2200);
-            }).catch(() => {
-                const range = document.createRange();
-                range.selectNode(aiPromptText);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
-            });
+    copyPromptBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(aiPromptText.textContent.trim()).then(() => {
+            copyPromptBtn.innerHTML = '<i class="ph ph-check"></i>';
+            copyPromptBtn.classList.add('copied');
+            setTimeout(() => {
+                copyPromptBtn.innerHTML = '<i class="ph ph-copy"></i>';
+                copyPromptBtn.classList.remove('copied');
+            }, 2200);
+        }).catch(() => {
+            const range = document.createRange();
+            range.selectNode(aiPromptText);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
         });
-    }
+    });
 
-    if (generateBtn) {
-        generateBtn.addEventListener('click', () => {
-            const raw = textInput.value.trim();
-            
-            if (!raw.includes(':')) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Formato requerido',
-                        text: 'Usa el formato: Pregunta : Respuesta',
-                        iconColor: '#ff4b4b',
-                        confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Entendido',
-                        buttonsStyling: false,
-                        customClass: { confirmButton: 'clay-btn clay-btn-green' }
-                    });
-                } else {
-                    alert('Formato requerido: Pregunta : Respuesta');
-                }
-                return;
-            }
-
-            allCards = [];
-            if (cardsGrid) cardsGrid.innerHTML = '';
-
-            raw.split('\n').forEach(line => {
-                const colonIdx = line.indexOf(':');
-                if (colonIdx === -1) return;
-
-                const q = line.slice(0, colonIdx).trim();
-                const a = line.slice(colonIdx + 1).trim();
-
-                if (q && a) {
-                    allCards.push({ q, a });
-                    renderCard(q, a);
+    generateBtn.addEventListener('click', () => {
+        const raw = textInput.value.trim();
+        
+        if (!raw.includes(':')) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Formato requerido',
+                text: 'Usa el formato: Pregunta : Respuesta Correcta | Incorrecta 1 | Incorrecta 2 | Incorrecta 3',
+                iconColor: '#ff4b4b',
+                confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Entendido',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'clay-btn clay-btn-green'
                 }
             });
+            return;
+        }
 
-            if (allCards.length === 0) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: '¡Ups!',
-                        text: 'No se encontraron tarjetas válidas. Revisa el formato: Pregunta : Respuesta',
-                        iconColor: '#ff4b4b',
-                        confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Revisar',
-                        buttonsStyling: false, 
-                        customClass: { confirmButton: 'clay-btn clay-btn-green' }
-                    });
-                } else {
-                    alert('No se encontraron tarjetas válidas. Revisa el formato: Pregunta : Respuesta');
+        allCards = [];
+        cardsGrid.innerHTML = '';
+
+        raw.split('\n').forEach(line => {
+            const colonIdx = line.indexOf(':');
+            if (colonIdx === -1) return;
+
+            const q = line.slice(0, colonIdx).trim();
+            const answersRaw = line.slice(colonIdx + 1).trim();
+
+            if (q && answersRaw) {
+                // Separamos la respuesta correcta de las incorrectas mediante el carácter '|'
+                const parts = answersRaw.split('|').map(p => p.trim());
+                const a = parts[0]; // La primera es la respuesta correcta
+                const incorrects = parts.slice(1); // Las demás son opciones incorrectas para el examen
+
+                if (a) {
+                    allCards.push({ q, a, incorrects });
+                    renderCard(q, a); // Solo se pasa la pregunta y la respuesta correcta a las flashcards
                 }
-                return;
             }
-
-            if (cardCounter) cardCounter.textContent = `${allCards.length} Tarjeta${allCards.length !== 1 ? 's' : ''}`;
-            switchView(viewStudy);
         });
-    }
 
-    if (backBtn)          backBtn.addEventListener('click', () => switchView(viewInput));
-    if (startPracticeBtn) startPracticeBtn.addEventListener('click', initPracticeSession);
-    if (exitPracticeBtn)  exitPracticeBtn.addEventListener('click', () => switchView(viewStudy));
-    if (retryBtn)         retryBtn.addEventListener('click', () => switchView(viewStudy));
+        if (allCards.length === 0) {
+            Swal.fire({
+                icon: 'error',
+                title: '¡Ups!',
+                text: 'No se encontraron tarjetas válidas. Revisa el formato.',
+                iconColor: '#ff4b4b',
+                confirmButtonText: '<i class="ph-fill ph-check-circle"></i> Revisar',
+                buttonsStyling: false, 
+                customClass: {
+                    confirmButton: 'clay-btn clay-btn-green' 
+                }
+            });
+            return;
+        }
+
+        cardCounter.textContent = `${allCards.length} Tarjeta${allCards.length !== 1 ? 's' : ''}`;
+        switchView(viewStudy);
+    });
+
+    backBtn.addEventListener('click',         () => switchView(viewInput));
+    startPracticeBtn.addEventListener('click', initPracticeSession);
+    exitPracticeBtn.addEventListener('click',  () => switchView(viewStudy));
+    retryBtn.addEventListener('click',         () => switchView(viewStudy));
 
     function initPracticeSession() {
         poolPracticeCards = [...allCards];
@@ -611,20 +608,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (mcOptionsContainer) mcOptionsContainer.innerHTML = '';
-        if (feedbackMessage) {
-            feedbackMessage.textContent  = '';
-            feedbackMessage.className    = 'feedback';
-        }
-        if (skipBtn) skipBtn.classList.remove('hidden');
-        if (nextBtn) nextBtn.classList.add('hidden');
+        mcOptionsContainer.innerHTML = '';
+        feedbackMessage.textContent  = '';
+        feedbackMessage.className    = 'feedback';
+        skipBtn.classList.remove('hidden');
+        nextBtn.classList.add('hidden');
 
         const idx = allCards.length - poolPracticeCards.length + 1;
-        if (practiceProgress) practiceProgress.textContent = `${idx} / ${allCards.length}`;
+        practiceProgress.textContent = `${idx} / ${allCards.length}`;
 
         const rnd    = Math.floor(Math.random() * poolPracticeCards.length);
         currentCard  = poolPracticeCards.splice(rnd, 1)[0];
-        if (practiceQuestion) practiceQuestion.textContent = currentCard.q;
+        practiceQuestion.textContent = currentCard.q;
 
         buildOptions(currentCard);
 
@@ -639,11 +634,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function buildOptions(card) {
-        if (!mcOptionsContainer) return;
-        const distractors = [...new Set(allCards.map(c => c.a).filter(a => a !== card.a))];
-        distractors.sort(() => 0.5 - Math.random());
+        let distractors = [];
 
-        const options = [...distractors.slice(0, 3), card.a].sort(() => 0.5 - Math.random());
+        // Si la tarjeta incluye respuestas incorrectas específicas en su línea, las utiliza
+        if (card.incorrects && card.incorrects.length > 0) {
+            distractors = [...card.incorrects];
+        } else {
+            // Respaldo en caso de ingresar tarjetas en formato antiguo (Pregunta : Respuesta)
+            distractors = [...new Set(allCards.map(c => c.a).filter(a => a !== card.a))];
+            distractors.sort(() => 0.5 - Math.random());
+            distractors = distractors.slice(0, 3);
+        }
+
+        // Unimos la respuesta correcta con las distractoras y las mezclamos al azar
+        const options = [...distractors, card.a].sort(() => 0.5 - Math.random());
 
         options.forEach(text => {
             const btn       = document.createElement('button');
@@ -658,18 +662,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const allBtns = mcOptionsContainer.querySelectorAll('.mc-option');
         allBtns.forEach(b => b.disabled = true);
 
-        if (skipBtn) skipBtn.classList.add('hidden');
-        if (nextBtn) nextBtn.classList.remove('hidden');
+        skipBtn.classList.add('hidden');
+        nextBtn.classList.remove('hidden');
 
         const isCorrect = selected === currentCard.a;
 
         if (isCorrect) {
             stats.correct++;
             clickedBtn.classList.add('correct');
-            if (feedbackMessage) {
-                feedbackMessage.textContent = '¡Excelente! Respuesta correcta.';
-                feedbackMessage.className   = 'feedback correct';
-            }
+            feedbackMessage.textContent = '¡Excelente! Respuesta correcta.';
+            feedbackMessage.className   = 'feedback correct';
             VoiceA11y.autoSpeak(`Correcto. La respuesta es ${currentCard.a}.`);
         } else {
             stats.wrong++;
@@ -677,10 +679,8 @@ document.addEventListener('DOMContentLoaded', () => {
             allBtns.forEach(b => {
                 if (b.textContent === currentCard.a) b.classList.add('correct');
             });
-            if (feedbackMessage) {
-                feedbackMessage.textContent = 'Incorrecto. Mira cuál era la respuesta.';
-                feedbackMessage.className   = 'feedback wrong';
-            }
+            feedbackMessage.textContent = 'Incorrecto. Mira cuál era la respuesta.';
+            feedbackMessage.className   = 'feedback wrong';
             VoiceA11y.autoSpeak(`Incorrecto. La respuesta correcta era ${currentCard.a}.`);
         }
 
@@ -692,33 +692,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (skipBtn) {
-        skipBtn.addEventListener('click', () => {
-            const allBtns = mcOptionsContainer.querySelectorAll('.mc-option');
-            allBtns.forEach(b => {
-                b.disabled = true;
-                if (b.textContent === currentCard.a) b.classList.add('correct');
-                else b.style.opacity = '0.42';
-            });
-
-            stats.skipped++;
-            if (feedbackMessage) {
-                feedbackMessage.textContent = 'Saltada. Esa era la respuesta correcta.';
-                feedbackMessage.className   = 'feedback wrong';
-            }
-            skipBtn.classList.add('hidden');
-            if (nextBtn) nextBtn.classList.remove('hidden');
-
-            practiceHistory.push({
-                question:      currentCard.q,
-                userAnswer:    'Sin respuesta',
-                correctAnswer: currentCard.a,
-                status:        'skipped'
-            });
+    skipBtn.addEventListener('click', () => {
+        const allBtns = mcOptionsContainer.querySelectorAll('.mc-option');
+        allBtns.forEach(b => {
+            b.disabled = true;
+            if (b.textContent === currentCard.a) b.classList.add('correct');
+            else b.style.opacity = '0.42';
         });
-    }
 
-    if (nextBtn) nextBtn.addEventListener('click', loadNextCard);
+        stats.skipped++;
+        feedbackMessage.textContent = 'Saltada. Esa era la respuesta correcta.';
+        feedbackMessage.className   = 'feedback wrong';
+        skipBtn.classList.add('hidden');
+        nextBtn.classList.remove('hidden');
+
+        practiceHistory.push({
+            question:      currentCard.q,
+            userAnswer:    'Sin respuesta',
+            correctAnswer: currentCard.a,
+            status:        'skipped'
+        });
+    });
+
+    nextBtn.addEventListener('click', loadNextCard);
 
     function showResults() {
         switchView(viewResults);
@@ -726,10 +722,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const total = allCards.length;
         const pct   = total > 0 ? Math.round((stats.correct / total) * 100) : 0;
 
-        if (scorePercentage) scorePercentage.textContent = `${pct}%`;
-        if (statCorrect)     statCorrect.textContent     = stats.correct;
-        if (statWrong)       statWrong.textContent       = stats.wrong;
-        if (statSkipped)     statSkipped.textContent     = stats.skipped;
+        scorePercentage.textContent = `${pct}%`;
+        statCorrect.textContent     = stats.correct;
+        statWrong.textContent       = stats.wrong;
+        statSkipped.textContent     = stats.skipped;
 
         const ringEl       = document.getElementById('score-ring-fill');
         const circumference = 251.2;
@@ -739,24 +735,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 120);
         }
 
-        if (historyList) {
-            historyList.innerHTML = '';
-            const labels = { correct: 'Correcto', wrong: 'Incorrecto', skipped: 'Sin respuesta' };
+        historyList.innerHTML = '';
+        const labels = { correct: 'Correcto', wrong: 'Incorrecto', skipped: 'Sin respuesta' };
 
-            practiceHistory.forEach(item => {
-                const el        = document.createElement('div');
-                el.className    = `history-item item-${item.status}`;
-                el.innerHTML    = `
-                    <span class="status-tag ${item.status}">${labels[item.status]}</span>
-                    <p>${escapeHtml(item.question)}</p>
-                    <span>Tu respuesta: <strong>${escapeHtml(item.userAnswer)}</strong></span>
-                    ${item.status !== 'correct'
-                        ? `<br><span>Correcta: <strong>${escapeHtml(item.correctAnswer)}</strong></span>`
-                        : ''}
-                `;
-                historyList.appendChild(el);
-            });
-        }
+        practiceHistory.forEach(item => {
+            const el        = document.createElement('div');
+            el.className    = `history-item item-${item.status}`;
+            el.innerHTML    = `
+                <span class="status-tag ${item.status}">${labels[item.status]}</span>
+                <p>${escapeHtml(item.question)}</p>
+                <span>Tu respuesta: <strong>${escapeHtml(item.userAnswer)}</strong></span>
+                ${item.status !== 'correct'
+                    ? `<br><span>Correcta: <strong>${escapeHtml(item.correctAnswer)}</strong></span>`
+                    : ''}
+            `;
+            historyList.appendChild(el);
+        });
 
         const summaryText = `Terminaste el quiz con ${pct} por ciento de aciertos. ${stats.correct} correctas, ${stats.wrong} incorrectas y ${stats.skipped} saltadas.`;
         const listenResultsBtn = document.getElementById('listen-results-btn');
@@ -767,7 +761,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderCard(q, a) {
-        if (!cardsGrid) return;
         const wrap      = document.createElement('div');
         wrap.className  = 'card-container';
         wrap.setAttribute('tabindex', '0');
@@ -803,18 +796,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const frontBtn = wrap.querySelector('.card-front .card-listen-btn');
         const backBtn  = wrap.querySelector('.card-back .card-listen-btn');
-        if (frontBtn) {
-            frontBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                VoiceA11y.speak(q, frontBtn);
-            });
-        }
-        if (backBtn) {
-            backBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                VoiceA11y.speak(a, backBtn);
-            });
-        }
+        frontBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            VoiceA11y.speak(q, frontBtn);
+        });
+        backBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            VoiceA11y.speak(a, backBtn);
+        });
 
         cardsGrid.appendChild(wrap);
     }
@@ -826,21 +815,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function switchView(next) {
-        if (!next) return;
         VoiceA11y.stop();
         [viewInput, viewStudy, viewPractice, viewResults].forEach(v => {
-            if (v) {
-                v.classList.remove('active');
-                v.classList.add('hidden');
-            }
+            v.classList.remove('active');
+            v.classList.add('hidden');
         });
         next.classList.remove('hidden');
         next.classList.add('active');
     }
 
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible' && viewInput && viewInput.classList.contains('active')) {
-            if (textInput) textInput.focus();
+        if (document.visibilityState === 'visible' && viewInput.classList.contains('active')) {
+            textInput.focus();
         }
     });
 
