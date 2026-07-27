@@ -1003,3 +1003,77 @@ body.dark-mode .member-info small { color: #a0aec0; }
     padding: 0; /* Elimina márgenes internos para que la foto ocupe todo el distintivo */
     background: transparent;
 }
+
+/* ============================================================
+   AJUSTES RESPONSIVOS PARA MÓVILES
+   ============================================================ */
+
+/* 1. Evita que la página cree desplazamiento horizontal involuntario */
+html, body {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+/* 2. Asegura que los elementos no sobrepasen el ancho del celular */
+* {
+    box-sizing: border-box;
+}
+
+img, svg, iframe, video {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 3. Adaptaciones para pantallas pequeñas (Celulares) */
+@media (max-width: 768px) {
+    /* Ajustar contenedores principales */
+    .page,
+    .content-card,
+    .login-card,
+    .quiz-card {
+        width: 92% !important;
+        max-width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 1rem !important;
+    }
+
+    /* Reducir el tamaño de títulos para que no rompan el diseño */
+    .hero-band h1 {
+        font-size: 1.8rem !important;
+    }
+
+    /* Ajustar el Header */
+    .site-header-inner {
+        padding: 0.5rem 1rem;
+    }
+
+    .brand-name {
+        font-size: 1.1rem;
+    }
+
+    .brand-sub {
+        display: none; /* Oculta el subtítulo en pantallas muy pequeñas para ahorrar espacio */
+    }
+
+    /* Los botones de IA y accesibilidad en formato vertical */
+    .ai-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .ai-link-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Ajustar las cuadrículas a una sola columna */
+    .cards-grid,
+    .mc-grid,
+    .results-layout {
+        grid-template-columns: 1fr !important;
+        display: flex;
+        flex-direction: column;
+    }
+}
