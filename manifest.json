@@ -1,7 +1,7 @@
 {
   "name": "Flashcards - Equipo Piloncillos",
   "short_name": "Flashcards",
-  "description": "Aplicación de flashcards con accesibilidad por voz y diseño claymórfico educativo",
+  "description": "Aplicación de flashcards con accesibilidad por voz",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
@@ -21,12 +21,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }
