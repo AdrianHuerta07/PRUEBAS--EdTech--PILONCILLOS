@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- ... (resto de tu head actual se mantiene igual) ... -->
+    <meta charset="UTF-8">
     <title>Flashcards | Piloncillos</title>
     
-    <!-- Mantenemos las hojas de estilo existentes -->
+    <!-- Hojas de estilo existentes -->
     <link rel="stylesheet" href="styles.css?v=1.0.2">
     
     <!-- Google Fonts y Phosphor Icons -->
@@ -24,12 +24,11 @@
     <div id="aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <!-- ══════════════════════════════════════════════════════
-         PANTALLA DE LOGIN (MODIFICADA)
+         PANTALLA DE LOGIN
          ══════════════════════════════════════════════════════ -->
     <div id="login-screen" class="login-screen">
         <div class="login-card clay-card">
             <div class="login-brand">
-                <!-- MODIFICACIÓN: Imagen "icon.jpg" -->
                 <div class="brand-mark clay-badge-icon" aria-hidden="true">
                     <img src="icon.jpg" alt="Logo Dragón" class="dragon-logo-img">
                 </div>
@@ -64,15 +63,14 @@
     </div>
 
     <!-- ══════════════════════════════════════════════════════
-         CONTENIDO DE LA APP (MODIFICADO)
+         CONTENIDO DE LA APP
          ══════════════════════════════════════════════════════ -->
     <div id="app-content" class="hidden">
 
-    <!-- HEADER INSTITUCIONAL (MODIFICADO) -->
+    <!-- HEADER INSTITUCIONAL -->
     <header class="site-header clay-header">
         <div class="site-header-inner">
             <div class="brand">
-                <!-- MODIFICACIÓN: Imagen "icon.jpg" -->
                 <div class="brand-mark clay-badge-icon" aria-hidden="true">
                     <img src="icon.jpg" alt="Logo Dragón" class="dragon-logo-img">
                 </div>
@@ -171,119 +169,119 @@
 
     <main class="page">
 
+        <!-- ══════════════════════════════════════════════════════
+             SECCIÓN PRINCIPAL CON PESTAÑAS DIVIDIDAS
+             ══════════════════════════════════════════════════════ -->
         <section id="view-input" class="view active">
             <div class="hero-band">
                 <h1>FLASHCARDS <span>¡APRENDE MÁS RÁPIDO!</span></h1>
                 <p>Crea, escucha y repasa tus lecciones.</p>
             </div>
 
-            <div class="content-card clay-card">
-
-                <div class="format-pill clay-pill">
-                    <i class="ph-fill ph-info"></i>
-                    Formato por línea: <strong>Pregunta&nbsp;:&nbsp;Respuesta</strong>
-                </div>
-
-                <div class="instructions-accordion">
-                    <button class="accordion-btn clay-btn-ghost" id="instructions-toggle" tabindex="0">
-                        <span><i class="ph ph-question"></i> Modos de uso y teclado</span>
-                        <i class="ph ph-caret-down caret"></i>
+            <div class="main-modal-card clay-card">
+                
+                <!-- PESTAÑAS DE NAVEGACIÓN (GUÍA DE INICIO ACTIVA POR DEFECTO) -->
+                <nav class="modal-tabs">
+                    <button class="tab-btn active" data-tab="tab-guide" type="button">
+                        <i class="ph ph-info"></i> Guía de Inicio
                     </button>
-                    <div class="accordion-content" id="instructions-content">
-                        <div class="instructions-grid">
-                            <div class="instruction-block clay-inset">
-                                <h4><i class="ph ph-magic-wand"></i> Flujo rápido con IA</h4>
-                                <ol>
-                                    <li>Copia el prompt con el botón.</li>
-                                    <li>Abre tu IA con los enlaces rápidos.</li>
-                                    <li>Vuelve rápido con <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd>.</li>
-                                    <li>Pega el texto directamente.</li>
-                                </ol>
+                    <button class="tab-btn" data-tab="tab-content" type="button">
+                        <i class="ph ph-upload-simple"></i> Cargar Contenido
+                    </button>
+                    <button class="tab-btn" data-tab="tab-shortcuts" type="button">
+                        <i class="ph ph-keyboard"></i> Atajos de Teclado
+                    </button>
+                </nav>
+
+                <div class="modal-tab-contents">
+                    
+                    <!-- 1. GUÍA DE INICIO (ACTIVA) -->
+                    <div id="tab-guide" class="tab-pane active">
+                        <div class="step-card">
+                            <h3><i class="ph-fill ph-gear"></i> Paso 1: Generar con IA.</h3>
+                            <div class="prompt-box clay-inset">
+                                <code id="ai-prompt-text">Genera 10 flashcards sobre [TU TEMA] para estudiar. Devuelve únicamente el texto usando strictly este formato por línea: Pregunta : Respuesta Correcta | Incorrecta 1 | Incorrecta 2 | Incorrecta 3. No incluyas números, viñetas, ni texto adicional.</code>
+                                <button id="copy-prompt-btn" class="btn-copy-prompt clay-btn-grey" type="button">
+                                    <i class="ph ph-copy"></i> Copiar Prompt
+                                </button>
                             </div>
-                            <div class="instruction-block clay-inset">
-                                <h4><i class="ph ph-keyboard"></i> Atajos de teclado</h4>
-                                <ul>
-                                    <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : Generar tarjetas.</li>
-                                    <li><kbd>Tab</kbd> : Navegar elementos.</li>
-                                    <li><kbd>Enter</kbd> / <kbd>Esp</kbd> : Voltear tarjeta.</li>
-                                </ul>
+                            <div class="ai-links-row">
+                                <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="ai-chip">
+                                    <i class="ph-fill ph-chat-circle-dots"></i> ChatGPT
+                                </a>
+                                <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" class="ai-chip">
+                                    <i class="ph-fill ph-sparkle"></i> Gemini
+                                </a>
+                                <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer" class="ai-chip">
+                                    <i class="ph-fill ph-fire"></i> Claude
+                                </a>
                             </div>
                         </div>
+
+                        <div class="step-card">
+                            <h3><i class="ph-fill ph-file-text"></i> Paso 2: Copiar Resultado.</h3>
+                            <ol class="step-list">
+                                <li>Copia el prompt con el botón superior.</li>
+                                <li>Abre tu IA favorita con los accesos rápidos.</li>
+                                <li>Pega y genera tus tarjetas en la IA.</li>
+                                <li>Copia la respuesta generada.</li>
+                                <li>Ve a la pestaña <strong>"Cargar Contenido"</strong> y pégalas allí.</li>
+                            </ol>
+                        </div>
                     </div>
+
+                    <!-- 2. CARGAR CONTENIDO (OCULTA INICIALMENTE) -->
+                    <div id="tab-content" class="tab-pane hidden">
+                        <div class="textarea-container">
+                            <textarea id="text-input" class="clay-textarea dark-editor" placeholder="Ejemplo:&#10;Capital de Francia : París&#10;Fórmula del agua : H₂O"></textarea>
+                            <button id="dictate-btn" class="dictate-btn-floating" type="button" title="Dictar por voz">
+                                <i class="ph ph-microphone"></i>
+                            </button>
+                        </div>
+                        <p id="dictate-status" class="dictate-status clay-pill hidden" role="status"></p>
+
+                        <div class="modal-footer-action">
+                            <button id="generate-btn" class="btn-primary clay-btn clay-btn-green full btn-generate-cards" type="button">
+                                <i class="ph-fill ph-sparkle"></i> GENERAR TARJETAS
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 3. ATAJOS DE TECLADO -->
+                    <div id="tab-shortcuts" class="tab-pane hidden">
+                        <div class="shortcuts-card clay-inset">
+                            <h4><i class="ph ph-keyboard"></i> Atajos de Teclado Disponibles</h4>
+                            <ul>
+                                <li><kbd>Ctrl</kbd> + <kbd>Enter</kbd> : Generar tarjetas desde el editor.</li>
+                                <li><kbd>Tab</kbd> : Navegar entre botones e inputs.</li>
+                                <li><kbd>Enter</kbd> / <kbd>Espacio</kbd> : Voltear tarjeta en modo estudio.</li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="ai-box clay-card-sub">
-                    <div class="ai-box-title">
-                        <i class="ph-fill ph-robot"></i>
-                        <span>Genera rápido con IA</span>
-                    </div>
-                    <p class="ai-hint">Copia el prompt → pégalo en ChatGPT, Gemini o Claude → pega el resultado abajo.</p>
-                    <div class="prompt-row clay-inset">
-                        <code id="ai-prompt-text">Genera 10 flashcards sobre [TU TEMA] para estudiar. Devuelve únicamente el texto usando strictly este formato por línea: Pregunta : Respuesta Correcta | Incorrecta 1 | Incorrecta 2 | Incorrecta 3. No incluyas números, viñetas, ni texto adicional.</code>
-                        <button id="copy-prompt-btn" class="copy-btn clay-btn-icon" title="Copiar prompt" tabindex="0">
-                            <i class="ph ph-copy"></i>
-                        </button>
-                    </div>
-
-                    <div class="ai-links">
-                        <a href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn clay-btn-sm" tabindex="0">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#10A37F" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2057 5.9847 5.9847 0 0 0 3.998-2.9001 6.0557 6.0557 0 0 0-.7478-7.0731zM13.0604 22.0147c-2.02 0-3.8058-1.1278-4.7061-2.8252l4.0886-2.3591v-4.7118l4.0818 2.3564v4.7182c0 1.5583-1.5724 2.8215-3.4643 2.8215zm-9.3516-7.8546a3.916 3.916 0 0 1 .5216-3.8641l4.0886 2.36v4.716l-4.0833 2.3577-2.0416-1.1788a3.9216 3.9216 0 0 1 1.5147-4.3908zm11.233-5.5901-4.0819-2.3565 2.0417-1.1789a3.916 3.916 0 0 1 3.8687.5255 3.9174 3.9174 0 0 1 1.5146 4.389l-2.0417-1.179v-2.3565h-1.3014zm-5.4674-4.8398c2.0199 0 3.8058 1.1279 4.7061 2.8252l-4.0886 2.3592v4.7117L6.01 11.309V6.5909c0-1.5583 1.5724-2.8216 3.4643-2.8216zm-5.3218 6.4746 4.0819 2.3564-2.0417 1.179a3.916 3.916 0 0 1-3.8687-.5256 3.9174 3.9174 0 0 1-1.5146-4.389l2.0417 1.1789v2.3565h1.3014zm13.167 2.94-4.0886-2.36v-4.7161l4.0833-2.3577 2.0416 1.1789a3.9216 3.9216 0 0 1-1.5147 4.3908l-.5216.5218v3.3423zM12 14.5369a2.31 2.31 0 0 1-2.308-2.308A2.31 2.31 0 0 1 12 9.921a2.31 2.31 0 0 1 2.308 2.308A2.31 2.31 0 0 1 12 14.5369z"/>
-                            </svg>
-                            ChatGPT
-                        </a>
-                        <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer" class="ai-link-btn clay-btn-sm" tabindex="0">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <defs>
-                                    <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="#1b87ea"/>
-                                        <stop offset="50%" stop-color="#7e42d9"/>
-                                        <stop offset="100%" stop-color="#e2536c"/>
-                                    </linearGradient>
-                                </defs>
-                                <path fill="url(#geminiGrad)" d="M12.01 2.023c.319 5.253 4.542 9.475 9.796 9.794-5.254.319-9.477 4.542-9.796 9.795-.319-5.253-4.542-9.476-9.796-9.795 5.254-.319 9.477-4.542 9.796-9.794Z"/>
-                            </svg>
-                            Gemini
-                        </a>
-                        <a href="https://claude.ai/" target="_blank" rel="noopener noreferrer" class="ai-link-btn clay-btn-sm" tabindex="0">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#D97757" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M21.2 21.5h2.8L13.5 2.5h-3L0 21.5h2.9l2.7-5.4h12.8l2.8 5.4ZM7 13.7l5-10.1 5 10.1H7Z"/>
-                            </svg>
-                            Claude
-                        </a>
-                    </div>
+                <!-- BARRA DE ACCESIBILIDAD -->
+                <div class="a11y-voice-bar">
+                    <i class="ph-fill ph-hand-pointing"></i> ¿Te cuesta leer? Pulsa <i class="ph ph-microphone"></i> para dictar o activa "Leer en voz alta" en el menú.
                 </div>
 
-                <div class="textarea-wrap">
-                    <textarea id="text-input" class="clay-textarea" placeholder="Pega tus tarjetas aquí o escríbelas a mano…&#10;&#10;Ejemplo:&#10;Capital de Francia : París&#10;Fórmula del agua : H₂O"></textarea>
-                    <button id="dictate-btn" class="dictate-btn clay-btn-float" type="button" title="Dictar por voz">
-                        <i class="ph ph-microphone"></i>
-                    </button>
-                </div>
-                <p id="dictate-status" class="dictate-status clay-pill hidden" role="status"></p>
-
-                <button id="generate-btn" class="btn-primary clay-btn clay-btn-green full">
-                    <i class="ph-fill ph-magic-wand"></i>
-                    Generar tarjetas
-                </button>
-
-                <p class="voice-tip clay-inset">
-                    <i class="ph-fill ph-hand-pointing"></i>
-                    ¿Te cuesta leer? Pulsa <i class="ph ph-microphone"></i> para dictar o activa <strong>"Leer en voz alta"</strong> en el menú.
-                </p>
             </div>
         </section>
 
+        <!-- ══════════════════════════════════════════════════════
+             VISTA DE ESTUDIO / TARJETAS
+             ══════════════════════════════════════════════════════ -->
         <section id="view-study" class="view hidden">
             <div class="content-card clay-card">
                 <div class="study-bar">
                     <div class="bar-left">
-                        <button id="back-btn" class="btn-secondary clay-btn clay-btn-grey">
+                        <button id="back-btn" class="btn-secondary clay-btn clay-btn-grey" type="button">
                             <i class="ph ph-arrow-left"></i> Volver
                         </button>
                         <span id="card-counter" class="badge clay-badge">0 Tarjetas</span>
                     </div>
-                    <button id="start-practice-btn" class="btn-accent clay-btn clay-btn-blue">
+                    <button id="start-practice-btn" class="btn-accent clay-btn clay-btn-blue" type="button">
                         <i class="ph-fill ph-play-circle"></i> Practicar quiz
                     </button>
                 </div>
@@ -294,10 +292,13 @@
             </div>
         </section>
 
+        <!-- ══════════════════════════════════════════════════════
+             VISTA DE PRÁCTICA / QUIZ
+             ══════════════════════════════════════════════════════ -->
         <section id="view-practice" class="view hidden">
             <div class="quiz-card clay-card">
                 <div class="quiz-header">
-                    <button id="exit-practice-btn" class="btn-secondary small clay-btn-grey">
+                    <button id="exit-practice-btn" class="btn-secondary small clay-btn-grey" type="button">
                         <i class="ph ph-x"></i> Salir
                     </button>
                     <span id="practice-progress" class="badge clay-badge">1 / 5</span>
@@ -311,16 +312,19 @@
                 <div id="mc-options" class="mc-grid"></div>
                 <p id="feedback-message" class="feedback"></p>
                 <div class="quiz-actions">
-                    <button id="skip-btn" class="btn-skip clay-btn clay-btn-outline">
+                    <button id="skip-btn" class="btn-skip clay-btn clay-btn-outline" type="button">
                         <i class="ph ph-skip-forward"></i> Saltar
                     </button>
-                    <button id="next-btn" class="btn-next clay-btn clay-btn-green hidden">
+                    <button id="next-btn" class="btn-next clay-btn clay-btn-green hidden" type="button">
                         Siguiente <i class="ph ph-arrow-right"></i>
                     </button>
                 </div>
             </div>
         </section>
 
+        <!-- ══════════════════════════════════════════════════════
+             VISTA DE RESULTADOS
+             ══════════════════════════════════════════════════════ -->
         <section id="view-results" class="view hidden">
             <div class="content-card clay-card">
                 <div class="results-layout">
@@ -352,7 +356,7 @@
                             <div class="stat-chip wrong-chip clay-chip-red"><span id="stat-wrong">0</span><p>Incorrectas</p></div>
                             <div class="stat-chip skip-chip clay-chip-yellow"><span id="stat-skipped">0</span><p>Saltadas</p></div>
                         </div>
-                        <button id="retry-btn" class="btn-primary full clay-btn clay-btn-green">
+                        <button id="retry-btn" class="btn-primary full clay-btn clay-btn-green" type="button">
                             <i class="ph ph-arrows-counter-clockwise"></i> Volver a estudiar
                         </button>
                     </div>
@@ -372,9 +376,44 @@
 
     </div>
 
+    <!-- SCRIPTS DE LA APLICACIÓN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="app.js?v=1.0.2"></script>
+
+    <!-- SCRIPT DE NAVEGACIÓN DE PESTAÑAS (FORZANDO INICIO EN GUÍA) -->
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            function activateTab(tabId) {
+                tabs.forEach(t => {
+                    const isTarget = t.getAttribute('data-tab') === tabId;
+                    t.classList.toggle('active', isTarget);
+                });
+
+                panes.forEach(p => {
+                    if (p.id === tabId) {
+                        p.classList.remove('hidden');
+                        p.classList.add('active');
+                    } else {
+                        p.classList.add('hidden');
+                        p.classList.remove('active');
+                    }
+                });
+            }
+
+            // Al cargar la página, se fuerza siempre la Guía de Inicio
+            activateTab('tab-guide');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.getAttribute('data-tab');
+                    activateTab(targetId);
+                });
+            });
+        });
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {

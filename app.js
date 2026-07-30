@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
             copyPromptBtn.innerHTML = '<i class="ph ph-check"></i>';
             copyPromptBtn.classList.add('copied');
             setTimeout(() => {
-                copyPromptBtn.innerHTML = '<i class="ph ph-copy"></i>';
+                copyPromptBtn.innerHTML = '<i class="ph ph-copy"></i> Copiar Prompt';
                 copyPromptBtn.classList.remove('copied');
             }, 2200);
         }).catch(() => {
@@ -558,14 +558,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const answersRaw = line.slice(colonIdx + 1).trim();
 
             if (q && answersRaw) {
-                // Separamos la respuesta correcta de las incorrectas mediante el carácter '|'
                 const parts = answersRaw.split('|').map(p => p.trim());
-                const a = parts[0]; // La primera es la respuesta correcta
-                const incorrects = parts.slice(1); // Las demás son opciones incorrectas para el examen
+                const a = parts[0];
+                const incorrects = parts.slice(1);
 
                 if (a) {
                     allCards.push({ q, a, incorrects });
-                    renderCard(q, a); // Solo se pasa la pregunta y la respuesta correcta a las flashcards
+                    renderCard(q, a);
                 }
             }
         });
@@ -636,17 +635,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function buildOptions(card) {
         let distractors = [];
 
-        // Si la tarjeta incluye respuestas incorrectas específicas en su línea, las utiliza
         if (card.incorrects && card.incorrects.length > 0) {
             distractors = [...card.incorrects];
         } else {
-            // Respaldo en caso de ingresar tarjetas en formato antiguo (Pregunta : Respuesta)
             distractors = [...new Set(allCards.map(c => c.a).filter(a => a !== card.a))];
             distractors.sort(() => 0.5 - Math.random());
             distractors = distractors.slice(0, 3);
         }
 
-        // Unimos la respuesta correcta con las distractoras y las mezclamos al azar
         const options = [...distractors, card.a].sort(() => 0.5 - Math.random());
 
         options.forEach(text => {

@@ -27,7 +27,7 @@
     --clay-shadow-card: 16px 16px 32px #c5d4c8, -16px -16px 32px #ffffff;
     --clay-shadow-inset: inset 4px 4px 8px #d1dfd4, inset -4px -4px 8px #ffffff;
     
-    /* Tipografía */
+    /* Tipografía y bordes */
     --font-main: 'Nunito', system-ui, -apple-system, sans-serif;
     --r-xl: 30px;
     --r-lg: 20px;
@@ -440,8 +440,8 @@ body.clay-bg {
     width: 100%;
 }
 
-.card-container { perspective: 1000px; height: 160px; cursor: pointer; width: 100%; }
-.card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease; }
+.card-container { perspective: 1000px; height: 180px; cursor: pointer; width: 100%; }
+.card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
 .card.is-flipped { transform: rotateY(180deg); }
 
 .card-face {
@@ -992,15 +992,507 @@ body.dark-mode .member-info small { color: #a0aec0; }
 .dragon-logo-img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Adapta la imagen recortándola si es necesario para llenar el círculo */
-    border-radius: 50%; /* Hace la imagen circular */
+    object-fit: cover;
+    border-radius: 50%;
     display: block;
 }
 
 .clay-header .brand-mark.clay-badge-icon,
 .login-brand .brand-mark.clay-badge-icon {
     overflow: hidden;
-    padding: 0; /* Elimina márgenes internos para que la foto ocupe todo el distintivo */
+    padding: 0;
     background: transparent;
 }
 
+/* ============================================================
+   ESTILOS REDISEÑO SEGÚN CAPTURA (Layout Modal / 2 Columnas)
+   ============================================================ */
+
+.main-modal-card {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    background: #181e29 !important;
+    border: 1px solid #2b364a !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5) !important;
+    color: #e2e8f0;
+}
+
+/* Tabs Superiores */
+.modal-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    border-bottom: 2px solid #252f42;
+    padding-bottom: 0.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.modal-tabs .tab-btn {
+    background: transparent;
+    border: none;
+    color: #8a99ad;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.4rem 0.8rem;
+    transition: color 0.2s ease;
+}
+
+.modal-tabs .tab-btn.active {
+    color: #ffffff;
+    border-bottom: 3px solid #1cb0f6;
+}
+
+/* Grid Principal */
+.modal-body-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Pasos Columna Izquierda */
+.step-card {
+    background: #111622;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #1d2636;
+}
+
+.step-card h3 {
+    font-size: 0.95rem;
+    color: #60a5fa;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.prompt-box {
+    background: #090d14 !important;
+    border: 1px solid #232d3f !important;
+    border-radius: 8px;
+    padding: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.prompt-box code {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    line-height: 1.3;
+}
+
+.btn-copy-prompt {
+    align-self: center;
+    font-size: 0.8rem !important;
+    padding: 0.4rem 1rem !important;
+    border-radius: 8px !important;
+}
+
+.ai-links-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+}
+
+.ai-chip {
+    background: #1e293b;
+    color: #cbd5e1;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.3rem 0.6rem;
+    border-radius: 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid #334155;
+}
+
+.step-list {
+    padding-left: 1.2rem;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    margin-bottom: 0.8rem;
+}
+
+.step-list kbd {
+    background: #27354a;
+    color: #fff;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.72rem;
+}
+
+/* Columna Derecha / Editor de Texto */
+.textarea-container {
+    position: relative;
+    height: 280px;
+}
+
+.clay-textarea.dark-editor {
+    width: 100%;
+    height: 100%;
+    background: #0d121d !important;
+    border: 1px solid #232e42 !important;
+    color: #4ade80 !important;
+    font-family: monospace;
+    font-size: 0.95rem;
+    border-radius: 12px !important;
+    padding: 1rem;
+    resize: none;
+}
+
+.dictate-btn-floating {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #0284c7;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+/* Bloque Atajos */
+.shortcuts-card {
+    background: #111622 !important;
+    border: 1px solid #1d2636 !important;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+    margin-top: 1rem;
+}
+
+.shortcuts-card h4 {
+    color: #38bdf8;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.shortcuts-card ul {
+    list-style: none;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Botón Principal Generar */
+.modal-footer-action {
+    margin-top: 1.5rem;
+}
+
+.btn-generate-cards {
+    background: #58cc02 !important;
+    color: #ffffff !important;
+    font-size: 1.1rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px;
+    border-radius: 12px !important;
+    padding: 1rem !important;
+    box-shadow: 0 6px 0 #46a302 !important;
+}
+
+/* Barra de Voz Inferior */
+.a11y-voice-bar {
+    background: #111622;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin-top: 1rem;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    text-align: center;
+}
+
+/* Adaptación a dispositivos móviles */
+@media (max-width: 768px) {
+    .modal-body-grid {
+        grid-template-columns: 1fr;
+    }
+    .textarea-container {
+        height: 200px;
+    }
+}
+
+/* ============================================================
+   ESTILOS MODO DÍA PARA NUEVO DISEÑO MODAL / PESTAÑAS
+   ============================================================ */
+
+/* Aplicar estilos claros por defecto (cuando NO tiene .dark-mode) */
+body:not(.dark-mode) .main-modal-card {
+    background: #ffffff !important;
+    border-color: #e5e5e5 !important;
+    box-shadow: var(--clay-shadow-card) !important;
+    color: var(--duo-dark-text) !important;
+}
+
+body:not(.dark-mode) .modal-tabs {
+    border-bottom-color: #e5e5e5;
+}
+
+body:not(.dark-mode) .modal-tabs .tab-btn {
+    color: #777777;
+}
+
+body:not(.dark-mode) .modal-tabs .tab-btn:hover {
+    color: var(--duo-blue);
+}
+
+body:not(.dark-mode) .modal-tabs .tab-btn.active {
+    color: var(--duo-blue);
+    border-bottom-color: var(--duo-blue);
+}
+
+/* Pasos y Bloques Internos en Modo Día */
+body:not(.dark-mode) .step-card,
+body:not(.dark-mode) .shortcuts-card {
+    background: #f7faf8 !important;
+    border-color: #e2e8f0 !important;
+}
+
+body:not(.dark-mode) .step-card h3,
+body:not(.dark-mode) .shortcuts-card h4 {
+    color: var(--duo-blue);
+}
+
+body:not(.dark-mode) .step-list,
+body:not(.dark-mode) .shortcuts-card ul {
+    color: #555555;
+}
+
+body:not(.dark-mode) .step-list kbd {
+    background: #e2e8f0;
+    color: #333333;
+}
+
+/* Caja del Prompt en Modo Día */
+body:not(.dark-mode) .prompt-box {
+    background: #f0f4f8 !important;
+    border-color: #cbd5e1 !important;
+}
+
+body:not(.dark-mode) .prompt-box code {
+    color: #334155;
+}
+
+body:not(.dark-mode) .ai-chip {
+    background: #ffffff;
+    color: #475569;
+    border-color: #cbd5e1;
+}
+
+body:not(.dark-mode) .ai-chip:hover {
+    background: #f1f5f9;
+    color: var(--duo-blue);
+}
+
+/* Editor de Texto en Modo Día */
+body:not(.dark-mode) .clay-textarea.dark-editor {
+    background: #ffffff !important;
+    border-color: var(--duo-grey) !important;
+    color: var(--duo-dark-text) !important;
+    box-shadow: var(--clay-shadow-inset) !important;
+}
+
+body:not(.dark-mode) .clay-textarea.dark-editor::placeholder {
+    color: #a0aec0;
+}
+
+/* Barra Inferior de Voz en Modo Día */
+body:not(.dark-mode) .a11y-voice-bar {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* ============================================================
+   REDISEÑO Y UNIFICACIÓN VISUAL DE TODAS LAS PANTALLAS
+   ============================================================ */
+
+/* 1. LOGIN / BIENVENIDA ─────────────────────────────────── */
+.login-screen {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.login-card {
+    max-width: 440px;
+    width: 100%;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    background: #181e29 !important;
+    border: 1px solid #2b364a !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5) !important;
+}
+
+body:not(.dark-mode) .login-card {
+    background: #ffffff !important;
+    border-color: #e5e5e5 !important;
+    box-shadow: var(--clay-shadow-card) !important;
+}
+
+/* 2. MODO ESTUDIO / FLASHCARDS ───────────────────────────── */
+#view-study {
+    gap: 1.5rem;
+}
+
+.study-bar {
+    background: #111622;
+    border: 1px solid #1d2636;
+    border-radius: 16px;
+    padding: 1rem 1.2rem;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+body:not(.dark-mode) .study-bar {
+    background: #f7faf8;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Tarjetas Flashcards estilo moderno */
+.cards-grid {
+    gap: 1.2rem;
+}
+
+.card-face {
+    background: #181e29 !important;
+    border: 1px solid #2b364a !important;
+    border-radius: 16px !important;
+    color: #e2e8f0 !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.card-back {
+    background: #0d2235 !important;
+    border-color: #1cb0f6 !important;
+    color: #82d5ff !important;
+}
+
+body:not(.dark-mode) .card-face {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: var(--duo-dark-text) !important;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06) !important;
+}
+
+body:not(.dark-mode) .card-back {
+    background: #e0f2fe !important;
+    border-color: var(--duo-blue) !important;
+    color: #0369a1 !important;
+}
+
+/* 3. MODO PRÁCTICA / QUIZ ────────────────────────────────── */
+.quiz-card {
+    max-width: 720px;
+    background: #181e29 !important;
+    border: 1px solid #2b364a !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5) !important;
+}
+
+body:not(.dark-mode) .quiz-card {
+    background: #ffffff !important;
+    border-color: #e5e5e5 !important;
+    box-shadow: var(--clay-shadow-card) !important;
+}
+
+.mc-option {
+    background: #111622 !important;
+    border: 1px solid #232d3f !important;
+    border-radius: 12px !important;
+    color: #cbd5e1 !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+
+.mc-option:hover:not(:disabled) {
+    background: #1e293b !important;
+    border-color: #3b82f6 !important;
+    transform: translateY(-2px);
+}
+
+body:not(.dark-mode) .mc-option {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: var(--duo-dark-text) !important;
+}
+
+body:not(.dark-mode) .mc-option:hover:not(:disabled) {
+    background: #f1f5f9 !important;
+    border-color: var(--duo-blue) !important;
+}
+
+/* Respuestas Correctas / Incorrectas */
+.mc-option.correct {
+    background: #064e3b !important;
+    border-color: #10b981 !important;
+    color: #a7f3d0 !important;
+}
+
+.mc-option.wrong {
+    background: #7f1d1d !important;
+    border-color: #ef4444 !important;
+    color: #fecaca !important;
+}
+
+body:not(.dark-mode) .mc-option.correct {
+    background: #dcfce7 !important;
+    border-color: #22c55e !important;
+    color: #15803d !important;
+}
+
+body:not(.dark-mode) .mc-option.wrong {
+    background: #fee2e2 !important;
+    border-color: #ef4444 !important;
+    color: #b91c1c !important;
+}
+
+/* 4. PANTALLA DE RESULTADOS ──────────────────────────────── */
+.results-card {
+    background: #181e29 !important;
+    border: 1px solid #2b364a !important;
+    border-radius: 20px !important;
+    padding: 2rem !important;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5) !important;
+}
+
+body:not(.dark-mode) .results-card {
+    background: #ffffff !important;
+    border-color: #e5e5e5 !important;
+    box-shadow: var(--clay-shadow-card) !important;
+}
+
+.history-item {
+    background: #111622 !important;
+    border: 1px solid #1d2636 !important;
+    border-radius: 12px !important;
+    color: #cbd5e1 !important;
+}
+
+body:not(.dark-mode) .history-item {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+    color: var(--duo-dark-text) !important;
+}
