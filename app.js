@@ -1,6 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ══════════════════════════════════════════════════════════
+    // MÓDULO SPLASH SCREEN (pantalla de bienvenida al abrir)
+    // ══════════════════════════════════════════════════════════
+    (function setupSplashScreen() {
+        const splash = document.getElementById('splash-screen');
+        if (!splash) return;
+
+        const MIN_DISPLAY_MS = 1100; // tiempo mínimo visible, para que la animación se aprecie
+        const startedAt = Date.now();
+
+        function hideSplash() {
+            const elapsed = Date.now() - startedAt;
+            const remaining = Math.max(0, MIN_DISPLAY_MS - elapsed);
+
+            setTimeout(() => {
+                splash.classList.add('splash-hidden');
+                document.body.classList.remove('has-splash');
+                // Elimina del DOM tras la transición para liberar recursos
+                setTimeout(() => splash.remove(), 500);
+            }, remaining);
+        }
+
+        if (document.readyState === 'complete') {
+            hideSplash();
+        } else {
+            window.addEventListener('load', hideSplash, { once: true });
+            // Salvaguarda por si 'load' tarda demasiado (recursos externos lentos)
+            setTimeout(hideSplash, 4000);
+        }
+    })();
+
+    // ══════════════════════════════════════════════════════════
     // MÓDULO RESPONSIVO PARA DISPOSITIVOS TÁCTILES / MÓVILES
     // ══════════════════════════════════════════════════════════
     (function setupMobileAdaptations() {
