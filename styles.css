@@ -1496,3 +1496,83 @@ body:not(.dark-mode) .history-item {
     border-color: #e2e8f0 !important;
     color: var(--duo-dark-text) !important;
 }
+
+/* ============================================================
+   CORRECCIÓN: BARRA DE PESTAÑAS (TABS) EN MÓVILES
+   ============================================================ */
+
+/* 1. Ajustes base de las pestañas */
+.modal-tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 2px solid #252f42;
+    padding-bottom: 0.8rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.modal-tabs .tab-btn {
+    background: transparent;
+    border: none;
+    color: #8a99ad;
+    font-size: 0.9rem;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0.6rem 0.8rem;
+    white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+    flex-shrink: 0;     /* Impide que los botones se deformen */
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.modal-tabs .tab-btn i,
+.modal-tabs .tab-btn svg {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.modal-tabs .tab-btn.active {
+    color: #ffffff;
+    border-bottom-color: #1cb0f6;
+}
+
+body:not(.dark-mode) .modal-tabs {
+    border-bottom-color: #e5e5e5;
+}
+
+body:not(.dark-mode) .modal-tabs .tab-btn {
+    color: #777777;
+}
+
+body:not(.dark-mode) .modal-tabs .tab-btn.active {
+    color: var(--duo-blue);
+    border-bottom-color: var(--duo-blue);
+}
+
+/* 2. Adaptación responsive para pantallas móviles (Smartphones) */
+@media (max-width: 768px) {
+    .modal-tabs {
+        justify-content: flex-start; /* Permite desplazamiento continuo */
+        overflow-x: auto;            /* Habilita el scroll horizontal si es necesario */
+        overflow-y: hidden;
+        gap: 0.5rem;
+        padding-bottom: 0.4rem;
+        -webkit-overflow-scrolling: touch; /* Scroll fluido en iOS */
+        scrollbar-width: none;       /* Oculta barra de scroll en Firefox */
+    }
+
+    .modal-tabs::-webkit-scrollbar {
+        display: none;               /* Oculta barra de scroll en Chrome/Safari */
+    }
+
+    .modal-tabs .tab-btn {
+        font-size: 0.82rem;
+        padding: 0.5rem 0.7rem;
+    }
+}
