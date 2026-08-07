@@ -24,7 +24,7 @@
     <div id="aria-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <!-- ══════════════════════════════════════════════════════
-         SPLASH SCREEN (pantalla de bienvenida al abrir la app)
+         SPLASH SCREEN
          ══════════════════════════════════════════════════════ -->
     <div id="splash-screen" class="splash-screen">
         <h1 class="splash-title">Flashcards</h1>
@@ -164,10 +164,10 @@
                         </div>
                     </li>
                     <li>
-                        <span class="role-badge editor">Investigador</span>
+                        <span class="role-badge editor">Documentador</span>
                         <div class="member-info">
                             <strong>-Carlos Gomez</strong>
-                            <small>Investigador / Documentador</small>
+                            <small>Documentador</small>
                         </div>
                     </li>
                 </ul>
@@ -188,7 +188,7 @@
 
             <div class="main-modal-card clay-card">
                 
-                <!-- PESTAÑAS DE NAVEGACIÓN (GUÍA DE INICIO ACTIVA POR DEFECTO) -->
+                <!-- PESTAÑAS DE NAVEGACIÓN -->
                 <nav class="modal-tabs">
                     <button class="tab-btn active" data-tab="tab-guide" type="button">
                         <i class="ph ph-info"></i> Guía de Inicio
@@ -198,6 +198,9 @@
                     </button>
                     <button class="tab-btn" data-tab="tab-shortcuts" type="button">
                         <i class="ph ph-keyboard"></i> Atajos de Teclado
+                    </button>
+                    <button class="tab-btn" data-tab="tab-help" type="button">
+                        <i class="ph ph-question"></i> Ayuda
                     </button>
                 </nav>
 
@@ -236,9 +239,25 @@
                                 <li>Ve a la pestaña <strong>"Cargar Contenido"</strong> y pégalas allí.</li>
                             </ol>
                         </div>
+
+                        <!-- VIDEO TUTORIAL DESPLEGABLE -->
+                        <div class="step-card">
+                            <details class="video-accordion">
+                                <summary class="video-accordion-header">
+                                    <span><i class="ph-fill ph-video-camera"></i> Ver Video Tutorial Explicativo</span>
+                                    <i class="ph ph-caret-down accordion-arrow"></i>
+                                </summary>
+                                <div class="video-container">
+                                    <video controls poster="icon-192.png" preload="metadata">
+                                        <source src="Flashcards-Piloncillos.mp4" type="video/mp4">
+                                        Tu navegador no soporta la reproducción de video HTML5.
+                                    </video>
+                                </div>
+                            </details>
+                        </div>
                     </div>
 
-                    <!-- 2. CARGAR CONTENIDO (OCULTA INICIALMENTE) -->
+                    <!-- 2. CARGAR CONTENIDO -->
                     <div id="tab-content" class="tab-pane hidden">
                         <div class="textarea-container">
                             <textarea id="text-input" class="clay-textarea dark-editor" placeholder="Ejemplo:&#10;Capital de Francia : París&#10;Fórmula del agua : H₂O"></textarea>
@@ -264,6 +283,51 @@
                                 <li><kbd>Tab</kbd> : Navegar entre botones e inputs.</li>
                                 <li><kbd>Enter</kbd> / <kbd>Espacio</kbd> : Voltear tarjeta en modo estudio.</li>
                             </ul>
+                        </div>
+                    </div>
+
+                    <!-- 4. PESTAÑA DE AYUDA -->
+                    <div id="tab-help" class="tab-pane hidden">
+                        <div class="step-card">
+                            <h3><i class="ph-fill ph-question"></i> Preguntas Frecuentes y Solución de Problemas</h3>
+                            
+                            <div class="help-faq-list">
+                                <div class="faq-item">
+                                    <strong>¿Qué formato deben tener las tarjetas?</strong>
+                                    <p>Escribe <code>Pregunta : Respuesta</code>. Si quieres opciones múltiples para el examen, agrégalas separadas por barra vertical: <code>Pregunta : Respuesta Correcta | Incorrecta 1 | Incorrecta 2</code>.</p>
+                                </div>
+
+                                <div class="faq-item">
+                                    <strong>¿El dictado por voz no funciona?</strong>
+                                    <p>Asegúrate de conceder permisos al micrófono cuando el navegador lo solicite y estar navegando sobre un entorno seguro (HTTPS). Mientras dictas, puedes decir <em>"dos puntos"</em> para separar la pregunta de la respuesta.</p>
+                                </div>
+
+                                <div class="faq-item">
+                                    <strong>¿Cómo escucho las preguntas y respuestas?</strong>
+                                    <p>Abre el menú superior de la derecha con el icono <i class="ph ph-list"></i> y pulsa <strong>"Activar lectura en voz alta"</strong>. También puedes presionar directamente el botón con el icono de altavoz <i class="ph ph-speaker-high"></i> en cada tarjeta.</p>
+                                </div>
+
+                                <div class="faq-item">
+                                    <strong>¿Funciona sin conexión a Internet?</strong>
+                                    <p>¡Sí! Al ser una PWA, la aplicación se guarda en tu dispositivo tras la primera visita y puedes usarla sin datos o sin señal Wi-Fi.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- VIDEO TUTORIAL DENTRO DE AYUDA -->
+                        <div class="step-card">
+                            <details class="video-accordion">
+                                <summary class="video-accordion-header">
+                                    <span><i class="ph-fill ph-video-camera"></i> Ver Video Tutorial Explicativo</span>
+                                    <i class="ph ph-caret-down accordion-arrow"></i>
+                                </summary>
+                                <div class="video-container">
+                                    <video controls poster="icon-192.png" preload="metadata">
+                                        <source src="Flashcards-Piloncillos.mp4" type="video/mp4">
+                                        Tu navegador no soporta la reproducción de video HTML5.
+                                    </video>
+                                </div>
+                            </details>
                         </div>
                     </div>
 
