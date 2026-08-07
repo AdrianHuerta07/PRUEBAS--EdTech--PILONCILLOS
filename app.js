@@ -560,6 +560,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // ══════════════════════════════════════════════════════════
+    // ACTUALIZACIÓN DINÁMICA DEL DASHBOARD
+    // ══════════════════════════════════════════════════════════
+    function updateDashboardMetrics() {
+        const totalCardsEl   = document.getElementById('kpi-total-cards');
+        const accuracyEl     = document.getElementById('kpi-accuracy');
+        const totalCorrectEl = document.getElementById('kpi-total-correct');
+        const dashCorrect    = document.getElementById('dash-correct');
+        const dashWrong      = document.getElementById('dash-wrong');
+        const dashSkipped    = document.getElementById('dash-skipped');
+        const weakListEl     = document.getElementById('weak-cards-list');
+
+        if (totalCardsEl) totalCardsEl.textContent = allCards.length;
+
+        const totalRespuestas = stats.correct + stats.wrong;
+        const precision = totalRespuestas > 0 ? Math.round((stats.correct / totalRespuestas) * 100) : 0;
+        
+        if (accuracyEl) accuracyEl.textContent = `${precision}%`;
+        if (totalCorrectEl) totalCorrectEl.textContent = stats.correct;
+
+        if (dashCorrect) dashCorrect.textContent = stats.correct;
+        if (dashWrong) dashWrong.textContent = stats.wrong;
+        if (dashSkipped) dashSkipped.textContent = stats.skipped;
+
+        if (weakListEl) {
+            weakListEl.innerHTML = '';
+            const falladas = practiceHistory.filter(item => item.status === 'wrong' || item.status === 'skipped');
+
+            if (falladas.length === 0) {
+                weakListEl.innerHTML = '<li class="weak-card-item empty">¡Sin errores en esta sesión!</li>';
+            } else {
+                falladas.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'weak-card-item';
+                    li.textContent = `❌ ${item.question}`;
+                    weakListEl.appendChild(li);
+                });
+            }
+        }
+    }
+
     generateBtn.addEventListener('click', () => {
         const raw = textInput.value.trim();
         
@@ -616,6 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         cardCounter.textContent = `${allCards.length} Tarjeta${allCards.length !== 1 ? 's' : ''}`;
+        updateDashboardMetrics();
         switchView(viewStudy);
     });
 
@@ -628,6 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
         poolPracticeCards = [...allCards];
         practiceHistory   = [];
         stats             = { correct: 0, wrong: 0, skipped: 0 };
+        updateDashboardMetrics();
         switchView(viewPractice);
         loadNextCard();
     }
@@ -717,6 +760,8 @@ document.addEventListener('DOMContentLoaded', () => {
             correctAnswer: currentCard.a,
             status:        isCorrect ? 'correct' : 'wrong'
         });
+
+        updateDashboardMetrics();
     }
 
     skipBtn.addEventListener('click', () => {
@@ -739,6 +784,8 @@ document.addEventListener('DOMContentLoaded', () => {
             correctAnswer: currentCard.a,
             status:        'skipped'
         });
+
+        updateDashboardMetrics();
     });
 
     nextBtn.addEventListener('click', loadNextCard);
@@ -778,6 +825,8 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             historyList.appendChild(el);
         });
+
+        updateDashboardMetrics();
 
         const summaryText = `Terminaste el quiz con ${pct} por ciento de aciertos. ${stats.correct} correctas, ${stats.wrong} incorrectas y ${stats.skipped} saltadas.`;
         const listenResultsBtn = document.getElementById('listen-results-btn');
@@ -856,5 +905,8 @@ document.addEventListener('DOMContentLoaded', () => {
             textInput.focus();
         }
     });
+
+    // Inicializar métricas del dashboard
+    updateDashboardMetrics();
 
 });

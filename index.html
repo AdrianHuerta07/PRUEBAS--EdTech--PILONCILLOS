@@ -196,6 +196,9 @@
                     <button class="tab-btn" data-tab="tab-content" type="button">
                         <i class="ph ph-upload-simple"></i> Cargar Contenido
                     </button>
+                    <button class="tab-btn" data-tab="tab-dashboard" type="button">
+                        <i class="ph ph-chart-pie-slice"></i> Dashboard
+                    </button>
                     <button class="tab-btn" data-tab="tab-shortcuts" type="button">
                         <i class="ph ph-keyboard"></i> Atajos de Teclado
                     </button>
@@ -260,7 +263,7 @@
                     <!-- 2. CARGAR CONTENIDO -->
                     <div id="tab-content" class="tab-pane hidden">
                         <div class="textarea-container">
-                            <textarea id="text-input" class="clay-textarea dark-editor" placeholder="Ejemplo:&#10;Capital de Francia : París&#10;Fórmula del agua : H₂O"></textarea>
+                            <textarea id="text-input" class="clay-textarea dark-editor" placeholder="Pega aquí el contenido de tus flashcards..."></textarea>
                             <button id="dictate-btn" class="dictate-btn-floating" type="button" title="Dictar por voz">
                                 <i class="ph ph-microphone"></i>
                             </button>
@@ -274,7 +277,58 @@
                         </div>
                     </div>
 
-                    <!-- 3. ATAJOS DE TECLADO -->
+                    <!-- 3. DASHBOARD DE RENDIMIENTO -->
+                    <div id="tab-dashboard" class="tab-pane hidden">
+                        <!-- TARJETAS DE MÉTRICAS (KPIs) -->
+                        <div class="kpi-grid">
+                            <div class="step-card kpi-card">
+                                <i class="ph-fill ph-cards card-icon blue"></i>
+                                <div class="kpi-info">
+                                    <span id="kpi-total-cards">0</span>
+                                    <p>Tarjetas Creadas</p>
+                                </div>
+                            </div>
+
+                            <div class="step-card kpi-card">
+                                <i class="ph-fill ph-chart-line-up card-icon green"></i>
+                                <div class="kpi-info">
+                                    <span id="kpi-accuracy">0%</span>
+                                    <p>Precisión Sesión</p>
+                                </div>
+                            </div>
+
+                            <div class="step-card kpi-card">
+                                <i class="ph-fill ph-check-circle card-icon orange"></i>
+                                <div class="kpi-info">
+                                    <span id="kpi-total-correct">0</span>
+                                    <p>Aciertos Totales</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECCIÓN DE ANÁLISIS DETALLADO -->
+                        <div class="dashboard-main-grid">
+                            <!-- Preguntas a Repasar -->
+                            <div class="step-card dashboard-widget">
+                                <h3><i class="ph-fill ph-warning-circle"></i> Preguntas para Repasar</h3>
+                                <ul id="weak-cards-list" class="weak-cards-list">
+                                    <li class="weak-card-item empty">Aún no has realizado ninguna práctica.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Estado de la Sesión -->
+                            <div class="step-card dashboard-widget">
+                                <h3><i class="ph-fill ph-activity"></i> Resumen de Estudio</h3>
+                                <div class="session-summary-box">
+                                    <p><strong>Correctas:</strong> <span id="dash-correct">0</span></p>
+                                    <p><strong>Incorrectas:</strong> <span id="dash-wrong">0</span></p>
+                                    <p><strong>Saltadas:</strong> <span id="dash-skipped">0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. ATAJOS DE TECLADO -->
                     <div id="tab-shortcuts" class="tab-pane hidden">
                         <div class="shortcuts-card clay-inset">
                             <h4><i class="ph ph-keyboard"></i> Atajos de Teclado Disponibles</h4>
@@ -286,7 +340,7 @@
                         </div>
                     </div>
 
-                    <!-- 4. PESTAÑA DE AYUDA -->
+                    <!-- 5. PESTAÑA DE AYUDA -->
                     <div id="tab-help" class="tab-pane hidden">
                         <div class="step-card">
                             <h3><i class="ph-fill ph-question"></i> Preguntas Frecuentes y Solución de Problemas</h3>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'piloncillos-flashcards-v32';
+const CACHE_NAME = 'piloncillos-flashcards-v33';
 
 // Recusos esenciales para el funcionamiento Offline de la App
 const ASSETS_TO_CACHE = [
